@@ -1,0 +1,54 @@
+# =========================================
+# NetBeans
+# =========================================
+nbproject/private/
+build/
+dist/
+nbbuild/
+.netbeans_automatic_build/
+*.orig
+
+# =========================================
+# Compilados y temporales Java
+# =========================================
+*.class
+*.log
+*.tmp
+*.bak
+*.swp
+
+# =========================================
+# Librerías locales (opcional)
+# =========================================
+*.jar
+*.war
+*.ear
+
+# =========================================
+# Archivos de sistema
+# =========================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# =========================================
+# IDEs alternativos
+# =========================================
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# =========================================
+# Otros temporales de desarrollo
+# =========================================
+out/
+target/
+
+*.class
+/build/
+/dist/
+nbproject/private/
+*.orig

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="CinemaCentro">
+  <ClassDiagramComponents>
+    <Class name="Comprador" package="" visibility="public" xPosition="61.0" yPosition="365.0">
+      <Fields>
+        <Field name="idComprador" type="int" visibility="private"/>
+        <Field name="dni" type="int" visibility="private"/>
+        <Field name="nombre" type="String" visibility="private"/>
+        <Field name="password" type="String" visibility="private"/>
+        <Field name="medioPago" type="String" visibility="private"/>
+        <Field name="fechaNacimiento" type="LocalDate" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Ticket" package="" visibility="public" xPosition="473.0" yPosition="365.0">
+      <Fields>
+        <Field name="idTiket" type="int" visibility="private"/>
+        <Field name="fechaCompra" type="LocalDate" visibility="private"/>
+        <Field name="fechaFuncion" type="LocalDate" visibility="private"/>
+        <Field name="monto" type="double" visibility="private"/>
+        <Field name="comprador" type="Comprador" visibility="private"/>
+        <Field name="lugar" type="Lugar" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Lugar" package="" visibility="public" xPosition="797.0" yPosition="330.0">
+      <Fields>
+        <Field name="idLugar" type="int" visibility="private"/>
+        <Field name="fila" type="int" visibility="private"/>
+        <Field name="numero" type="int" visibility="private"/>
+        <Field name="estado" type="boolean" visibility="private"/>
+        <Field name="proyeccion" type="Proyeccion" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Proyeccion" package="" visibility="public" xPosition="376.0" yPosition="19.0">
+      <Fields>
+        <Field name="idProyeccion" type="int" visibility="private"/>
+        <Field name="idioma" type="String" visibility="private"/>
+        <Field name="es3D" type="boolean" visibility="private"/>
+        <Field name="subtitulada" type="boolean" visibility="private"/>
+        <Field name="horarInicio" type="LocalTime" visibility="private"/>
+        <Field name="horaFin" type="LocalTime" visibility="private"/>
+        <Field name="precio" type="double" visibility="private"/>
+        <Field name="pelicula" type="Pelicula" visibility="private"/>
+        <Field name="sala" type="Sala" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Pelicula" package="" visibility="public" xPosition="61.0" yPosition="19.0">
+      <Fields>
+        <Field name="idPelicula" type="int" visibility="private"/>
+        <Field name="titulo" type="String" visibility="private"/>
+        <Field name="director" type="String" visibility="private"/>
+        <Field name="actores" type="String" visibility="private"/>
+        <Field name="origen" type="String" visibility="private"/>
+        <Field name="genero" type="String" visibility="private"/>
+        <Field name="estreno" type="LocalDate" visibility="private"/>
+        <Field name="enCartelera" type="boolean" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+    <Class name="Sala " package="" visibility="public" xPosition="765.0" yPosition="3.0">
+      <Fields>
+        <Field name="idSala" type="int" visibility="private"/>
+        <Field name="nroSala" type="int" visibility="private"/>
+        <Field name="apta3D" type="boolean" visibility="private"/>
+        <Field name="capacidad" type="int" visibility="private"/>
+        <Field name="estado" type="String" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods>
+        <Method name="Getters" returnType="void" visibility="public"/>
+        <Method name="Setters" returnType="void" visibility="public"/>
+      </Methods>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <HasRelation name="tiene" source="Lugar" target="Ticket" type="Composition" sourceCardinality="0..1" targetCardinality="1..1"/>
+    <HasRelation name="tiene" source="Proyeccion" target="Lugar" type="Composition" sourceCardinality="0..1" targetCardinality="1..*" collectionType="List"/>
+    <HasRelation name="tiene" source="Comprador" target="Ticket" type="Default" sourceCardinality="0..1" targetCardinality="1..*" collectionType="List"/>
+    <HasRelation name="tiene" source="Pelicula" target="Proyeccion" type="Aggregation" sourceCardinality="0..1" targetCardinality="1..*" collectionType="List"/>
+    <HasRelation name="proyecta" source="Sala " target="Proyeccion" type="Default" sourceCardinality="0..1" targetCardinality="1..*" collectionType="List"/>
+  </ClassDiagramRelations>
+</ClassDiagram>
