@@ -6,10 +6,9 @@ package Vistas;
 
 import Modelo.*;
 import Persistencia.*;
+import java.awt.event.ItemEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.HashSet;
-import javax.swing.UIManager;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
@@ -22,45 +21,18 @@ import javax.swing.table.TableRowSorter;
  *
  * @author PC1
  */
-public class TicketGestor extends javax.swing.JInternalFrame {
+public class VentaPresencial extends javax.swing.JInternalFrame {
 
-  private SistemaCine sc ; 
-    private Conexion con ; 
-  private  ProyeccionData pd;
-     private LugarData ld;
-    public TicketGestor(SistemaCine sc) {
-        
-        initComponents();
-        
+    private SistemaCine sistemaCine = new SistemaCine();
+    private Conexion conex = sistemaCine.conexionDb();
 
-        
-        this.sc = sc;
-    this.con = sc.conexionDb();
-        this.pd=new ProyeccionData(con);
-        this.ld=new  LugarData(con);
-        llenarTableTicket();
-        
-        setSize(800, 600);
-        setResizable(false);
-        
-        llenarTableCompradores();
-        filtrarCompradores();
-        
-        filtrarTickets();
-        llenarListPeliculas();
-        llenarListProyeccion();
-        llenarListButacas();
-        buttonGroup1.add(radioButtonEfectivo);
-        buttonGroup1.add(radioButtonTransfer);
-
-    }
     DefaultTableModel modeloTableComprador; // (DTM Personalizado)
     TableRowSorter<DefaultTableModel> sortModelComprador; // (Filtrado)
 
     DefaultTableModel modeloTableTicket;
     TableRowSorter<DefaultTableModel> sortModelTicket;
 
-    
+    //======== Metodos Table Ticket ========
     private void llenarTableTicket() {
         DocumentListener listenerFiltro = new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
@@ -76,36 +48,26 @@ public class TicketGestor extends javax.swing.JInternalFrame {
             }
         };
 
-        TicketData ticketDAO = new TicketData(con);
+        TicketData ticketDAO = new TicketData(conex);
         List<Ticket> listaTickets = ticketDAO.listarTickets();
 
         tableTicket.setShowGrid(false);
         modeloTableTicket = (DefaultTableModel) tableTicket.getModel();
         modeloTableTicket.setRowCount(0);
 
-       for (Ticket t : listaTickets) {
-
-    Comprador nombreComprador = t.getComprador() ;
-    Comprador idComprador = t.getComprador() ;
-
-    Lugar asiento = t.getAsiento() ;
-
-    String tituloPelicula = "—";
-   
-
-    modeloTableTicket.addRow(new Object[]{
-        t.getIdTicket(),
-        nombreComprador,
-        idComprador,
-        asiento,
-        t.getFechaCompra(),
-        t.getFechaFuncion(),
-        tituloPelicula,
-        t.getMonto(),
-        t.isActivo()
-    });
-}
-
+        for (Ticket t : listaTickets) {
+            modeloTableTicket.addRow(new Object[]{
+                t.getIdTicket(),
+                t.getComprador(),
+                t.getAsiento(),
+                t.getFechaCompra(),
+                t.getFechaFuncion(),
+                t.getFuncion().getHoraInicio(),
+                t.getFuncion().getPelicula(),
+                t.getMonto(),
+                t.isActivo()
+            });
+        }
 
         sortModelTicket = new TableRowSorter<>(modeloTableTicket);
         tableTicket.setRowSorter(sortModelTicket);
@@ -121,7 +83,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         }
     }
 
-    
+    //========== Metodos Table Comprador ===========
     private void llenarTableCompradores() {
 
         DocumentListener listenerFiltro = new DocumentListener() {
@@ -137,7 +99,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
                 filtrarCompradores();
             }
         };
-        CompradorData compradorDAO = new CompradorData(con);
+        CompradorData compradorDAO = new CompradorData(conex);
         List<Comprador> listaCompradores = compradorDAO.listarCompradores();
 
         tableCompradores.setShowGrid(false);
@@ -165,42 +127,129 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         }
     }
 
+    //========== Metodos ComboBox Pelicula ===========
     private void llenarListPeliculas() {
-        PeliculaData peliculaDAO = new PeliculaData(con);
+        PeliculaData peliculaDAO = new PeliculaData(conex);
         List<Pelicula> listaPeliculas = peliculaDAO.listarPeliculasEnCartelera();
 
         for (Pelicula p : listaPeliculas) {
             comboBoxPeliculas.addItem(p);
         }
 
+//        if (comboBoxPeliculas.getItemCount() > 0) {
+//            Pelicula preseleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
+//            comboBoxProyeccion.removeAllItems();
+//            llenarListProyeccion(preseleccionada);    
+//            }   
     }
 
-    private void llenarListProyeccion() {
-        comboBoxProyeccion.removeAllItems();
-    comboBoxButaca.removeAllItems();
-        
-        List<Proyeccion> listaProyecciones = pd.listarActivas();
+    private void listenerPeliculas() {
 
-        for (Proyeccion p : listaProyecciones) {
-            comboBoxProyeccion.addItem(p);
+        comboBoxPeliculas.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+
+                Pelicula peliculaSeleccionada = (Pelicula) e.getItem();
+                comboBoxSala.removeAllItems();
+                comboBoxProyeccion.removeAllItems();
+                comboBoxButaca.removeAllItems();
+                llenarListSalas(peliculaSeleccionada);
+
+            }
+        });
+    }
+
+    //========== Metodos ComboBox Sala ============
+    private void llenarListSalas(Pelicula peli) {
+        ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+        List<Sala> salas = proyeccionDAO.salasPorPelicula(peli.getIdPelicula());
+
+        for (Sala s : salas) {
+            comboBoxSala.addItem(s);
         }
+        listenerSala();
+
+        if (comboBoxSala.getItemCount() > 0) {
+            Sala s = (Sala) comboBoxSala.getSelectedItem();
+            proyeccionDAO = new ProyeccionData(conex);
+
+            List<Proyeccion> lista = proyeccionDAO.proyeccionesPorPeliculaYSala(
+                    peli.getIdPelicula(), s.getIdSala());
+
+            comboBoxProyeccion.removeAllItems();
+            for (Proyeccion p : lista) {
+                comboBoxProyeccion.addItem(p);
+            }
+        }
+        }
+
+    
+
+    private void listenerSala() {
+
+        comboBoxSala.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+
+                Sala sala = (Sala) e.getItem();
+                Pelicula peli = (Pelicula) comboBoxPeliculas.getSelectedItem();
+                ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+
+                comboBoxProyeccion.removeAllItems();
+                comboBoxButaca.removeAllItems();
+
+                List<Proyeccion> listaProyecciones = proyeccionDAO.proyeccionesPorPeliculaYSala(peli.getIdPelicula(), sala.getIdSala());
+
+                for (Proyeccion p : listaProyecciones) {
+                    comboBoxProyeccion.addItem(p);
+                }
+            }
+        });
     }
 
-    private void llenarListButacas() {
-        Proyeccion itemSeleccionado = (Proyeccion) comboBoxProyeccion.getSelectedItem();
-      ;
+    //========== Metodos ComboBox Proyeccion ===========
+    private void listenerProyeccion() {
+        comboBoxProyeccion.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
 
-        if (itemSeleccionado != null) {
-            List<Lugar> listaLugares = ld.lugaresDisponiblesPorProyeccion(itemSeleccionado.getIdProyeccion());
-            comboBoxButaca.removeAllItems();
+                Proyeccion proyeccionSeleccionada = (Proyeccion) e.getItem();
+                comboBoxButaca.removeAllItems();
+                llenarListButacas(proyeccionSeleccionada);
+            }
+        });
+    }
+
+    //========== Metodos ComboBox Butacas ===========
+    private void llenarListButacas(Proyeccion pro) {
+        //Proyeccion itemSeleccionado = (Proyeccion) comboBoxProyeccion.getSelectedItem();
+        LugarData lugarDAO = new LugarData(conex);
+
+        if (pro != null) {
+            List<Lugar> listaLugares = lugarDAO.lugaresDisponiblesPorProyeccion(pro.getIdProyeccion());
+            System.out.println(pro.getIdProyeccion());
             for (Lugar butaca : listaLugares) {
                 comboBoxButaca.addItem(butaca);
             }
-        } else {
-            JOptionPane.showMessageDialog(rootPane, "Seleccione una proyeccion.");
         }
     }
 
+    public VentaPresencial(SistemaCine sc) {
+        setSize(800, 600);
+        setResizable(false);
+        initComponents();
+        tableCompradores.setDefaultEditor(Object.class, null);
+        tableTicket.setDefaultEditor(Object.class, null);
+        llenarTableCompradores();
+        filtrarCompradores();
+        llenarTableTicket();
+        filtrarTickets();
+        llenarListPeliculas();
+        listenerPeliculas();
+        listenerProyeccion();
+
+        if (comboBoxPeliculas.getItemCount() > 0) {
+            Pelicula seleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
+            llenarListSalas(seleccionada); // ← carga las salas
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -219,19 +268,18 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        radioButtonTransfer = new javax.swing.JRadioButton();
         jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        radioButtonEfectivo = new javax.swing.JRadioButton();
         comboBoxPeliculas = new javax.swing.JComboBox<>();
         comboBoxProyeccion = new javax.swing.JComboBox<>();
         comboBoxButaca = new javax.swing.JComboBox<>();
-        jLabel10 = new javax.swing.JLabel();
-        txtMonto = new javax.swing.JTextField();
         dateChooserEmision = new com.toedter.calendar.JDateChooser();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         dateChooserFuncion = new com.toedter.calendar.JDateChooser();
+        jLabel16 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        comboBoxSala = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -273,27 +321,10 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         jLabel9.setText("Función");
 
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("Pelicula");
-
-        radioButtonTransfer.setText("Transferencia");
-        radioButtonTransfer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radioButtonTransferActionPerformed(evt);
-            }
-        });
+        jLabel11.setText("Pelicula:");
 
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel12.setText("Proyeccion:");
-
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setText("Medio de Pago:");
-
-        radioButtonEfectivo.setText("Efectivo");
-        radioButtonEfectivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radioButtonEfectivoActionPerformed(evt);
-            }
-        });
 
         comboBoxPeliculas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -307,55 +338,74 @@ public class TicketGestor extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("Total a Pagar:");
-
-        txtMonto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtMontoActionPerformed(evt);
-            }
-        });
-
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setText("Fecha de Emision:");
 
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel15.setText("Fecha de Funcion:");
 
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel16.setText("Total:");
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("Sala:");
+
+        comboBoxSala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxSalaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel14))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(radioButtonEfectivo)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                .addGap(75, 75, 75)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel13))
                                 .addGap(18, 18, 18)
-                                .addComponent(radioButtonTransfer))
-                            .addComponent(comboBoxButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(comboBoxProyeccion, javax.swing.GroupLayout.Alignment.LEADING, 0, 158, Short.MAX_VALUE)
-                                .addComponent(comboBoxPeliculas, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(dateChooserEmision, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(comboBoxButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(comboBoxProyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                .addGap(105, 105, 105)
+                                .addComponent(jLabel16)
+                                .addGap(24, 24, 24)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                            .addGap(93, 93, 93)
+                            .addComponent(jLabel11)
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel9)
+                                .addComponent(comboBoxPeliculas, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addGap(18, 18, 18)
-                        .addComponent(dateChooserFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(56, 56, 56)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(41, 41, 41)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addGap(18, 21, Short.MAX_VALUE)
+                                .addComponent(dateChooserFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addComponent(jLabel14)
+                                .addGap(18, 18, 18)
+                                .addComponent(dateChooserEmision, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -368,6 +418,10 @@ public class TicketGestor extends javax.swing.JInternalFrame {
                     .addComponent(comboBoxPeliculas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(comboBoxProyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -375,25 +429,17 @@ public class TicketGestor extends javax.swing.JInternalFrame {
                     .addComponent(jLabel8)
                     .addComponent(comboBoxButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(txtMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(dateChooserFuncion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel15)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel15))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dateChooserEmision, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(radioButtonEfectivo)
-                        .addComponent(radioButtonTransfer)))
+                    .addComponent(dateChooserEmision, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -429,7 +475,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(41, 41, 41)
+                .addGap(28, 28, 28)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(69, 69, 69)
@@ -439,7 +485,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addComponent(txtIDComprador, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -463,7 +509,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         });
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("GESTION DE TICKETS");
+        jLabel7.setText("VENTA PRESENCIAL");
 
         tableTicket.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -499,11 +545,8 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(27, 27, 27)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(299, 299, 299)
-                        .addComponent(jLabel7))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel3)
@@ -515,41 +558,42 @@ public class TicketGestor extends javax.swing.JInternalFrame {
                             .addComponent(botonBorrarTicket))
                         .addComponent(jScrollPane1)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGap(1, 1, 1)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(botonGenerarTicket)
                                     .addGap(134, 134, 134)
                                     .addComponent(botonNuevoTicket))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(46, 46, 46)))
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGap(28, 28, 28)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(293, 293, 293)
+                        .addComponent(jLabel7)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
                 .addComponent(jLabel7)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(botonNuevoTicket)
-                            .addComponent(botonGenerarTicket)))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(botonGenerarTicket))
+                        .addGap(30, 30, 30))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonAnularTicket)
                     .addComponent(txtIDTicket, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botonBorrarTicket)
                     .addComponent(jLabel3))
-                .addGap(9, 9, 9))
+                .addGap(69, 69, 69))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -566,14 +610,6 @@ public class TicketGestor extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void radioButtonTransferActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonTransferActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radioButtonTransferActionPerformed
-
-    private void radioButtonEfectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonEfectivoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radioButtonEfectivoActionPerformed
-
     private void botonAnularTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAnularTicketActionPerformed
         if (tableTicket.getSelectedRow() < 0) {
             JOptionPane.showMessageDialog(rootPane, "Seleccione un ticket de la lista.");
@@ -582,7 +618,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
 
         int id = (int) tableTicket.getValueAt(tableTicket.getSelectedRow(), 0);
 
-        TicketData ticketDAO = new TicketData(con);
+        TicketData ticketDAO = new TicketData(conex);
 
         Object[] opciones = {"Si", "No"};
 
@@ -639,10 +675,10 @@ public class TicketGestor extends javax.swing.JInternalFrame {
             return;
         }
 
-        TicketData ticketDAO = new TicketData(con);
-        Ticket ticket = new Ticket( asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);
+        TicketData ticketDAO = new TicketData(conex);
+        Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);
         ticketDAO.guardarTicket(ticket);
-        llenarTableTicket(); 
+        llenarTableTicket();
 
     }//GEN-LAST:event_botonGenerarTicketActionPerformed
 
@@ -658,7 +694,7 @@ public class TicketGestor extends javax.swing.JInternalFrame {
 
         int id = (int) tableTicket.getValueAt(tableTicket.getSelectedRow(), 0);
 
-        TicketData ticketDAO = new TicketData(con);
+        TicketData ticketDAO = new TicketData(conex);
 
         Object[] opciones = {"Si", "No"};
 
@@ -670,10 +706,6 @@ public class TicketGestor extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_botonBorrarTicketActionPerformed
 
-    private void txtMontoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMontoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtMontoActionPerformed
-
     private void txtIDCompradorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDCompradorActionPerformed
 
     }//GEN-LAST:event_txtIDCompradorActionPerformed
@@ -683,14 +715,20 @@ public class TicketGestor extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_comboBoxPeliculasActionPerformed
 
     private void comboBoxProyeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxProyeccionActionPerformed
-     comboBoxButaca.removeAllItems();
-     llenarListButacas();
+
     }//GEN-LAST:event_comboBoxProyeccionActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void comboBoxSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxSalaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboBoxSalaActionPerformed
 
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAnularTicket;
@@ -701,15 +739,16 @@ public class TicketGestor extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<Lugar> comboBoxButaca;
     private javax.swing.JComboBox<Pelicula> comboBoxPeliculas;
     private javax.swing.JComboBox<Proyeccion> comboBoxProyeccion;
+    private javax.swing.JComboBox<Sala> comboBoxSala;
     private com.toedter.calendar.JDateChooser dateChooserEmision;
     private com.toedter.calendar.JDateChooser dateChooserFuncion;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
@@ -720,14 +759,11 @@ public class TicketGestor extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JRadioButton radioButtonEfectivo;
-    private javax.swing.JRadioButton radioButtonTransfer;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tableCompradores;
     private javax.swing.JTable tableTicket;
     private javax.swing.JTextField txtIDComprador;
     private javax.swing.JTextField txtIDTicket;
-    private javax.swing.JTextField txtMonto;
     // End of variables declaration//GEN-END:variables
 
-   
 }

@@ -70,18 +70,15 @@ public class SalaData {
                 sala.setApta3D(rs.getBoolean("apta3D"));
                 sala.setCapacidad(rs.getInt("capacidad"));
                 sala.setEstado(rs.getBoolean("estado"));
-JOptionPane.showMessageDialog(null, "busqueda exitosa");
 
-            }else{
-            
-JOptionPane.showMessageDialog(null, "no se a encontrado el id de esa sala");
-            
+            } else {
+
+                JOptionPane.showMessageDialog(null, "no se a encontrado el id de esa sala");
+
             }
-            
-            
+
             ps.close();
-            
-            
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "busqueda erronea");
         }
@@ -110,7 +107,7 @@ JOptionPane.showMessageDialog(null, "no se a encontrado el id de esa sala");
             }
 
             ps.close();
-            
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "error al listar salas");
         }
@@ -142,42 +139,40 @@ JOptionPane.showMessageDialog(null, "no se a encontrado el id de esa sala");
 
     }
 
-   
     public void bajaLogicaSala(int idSala) {
-    String sql = "UPDATE sala SET estado = 0 WHERE Id_sala = ?";
-    try {
-        PreparedStatement ps = conec.prepareStatement(sql);
-        ps.setInt(1, idSala);
+        String sql = "UPDATE sala SET estado = 0 WHERE Id_sala = ?";
+        try {
+            PreparedStatement ps = conec.prepareStatement(sql);
+            ps.setInt(1, idSala);
 
-        int filas = ps.executeUpdate();
-        if (filas > 0) {
-            JOptionPane.showMessageDialog(null, "Sala dada de baja correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró la sala con ese ID.");
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                JOptionPane.showMessageDialog(null, "Sala dada de baja correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró la sala con ese ID.");
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al dar de baja la sala: ");
         }
-        ps.close();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(null, "Error al dar de baja la sala: ");
     }
-}
+
     public void altaLogicaSala(int idSala) {
-    String sql = "UPDATE sala SET estado = 1 WHERE Id_sala = ?";
-    try {
-        PreparedStatement ps = conec.prepareStatement(sql);
-        ps.setInt(1, idSala);
+        String sql = "UPDATE sala SET estado = 1 WHERE Id_sala = ?";
+        try {
+            PreparedStatement ps = conec.prepareStatement(sql);
+            ps.setInt(1, idSala);
 
-        int filas = ps.executeUpdate();
-        if (filas > 0) {
-            JOptionPane.showMessageDialog(null, "Sala dada de alta correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró la sala con ese ID.");
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                JOptionPane.showMessageDialog(null, "Sala dada de alta correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró la sala con ese ID.");
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al dar de alta la sala: ");
         }
-        ps.close();
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(null, "Error al dar de alta la sala: " );
     }
-}
-
-
 
 }
