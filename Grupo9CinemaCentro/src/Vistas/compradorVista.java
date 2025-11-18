@@ -93,6 +93,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
                         txtDNI.setText(String.valueOf(comprador.getDni()));
                         txtPassword.setText(comprador.getPassword());
                         dateChooserFecha.setDate(java.sql.Date.valueOf(comprador.getFechaNac()));
+                        comboBoxPago.setSelectedItem(comprador.getMedioPago());
                     }
                 }
             }
@@ -116,6 +117,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
         //tableCompradores.setCellSelectionEnabled(false);
         llenarTableCompradores();
         filtrarCompradores();
+        buttonGuardarCambios.setEnabled(false);
 
     }
 
@@ -365,6 +367,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
         tableCompradores.setRowSelectionAllowed(true);
         seleccionComprador();
         buttonGuardar.setEnabled(false);
+        buttonGuardarCambios.setEnabled(true);
 
     }//GEN-LAST:event_buttonModificarActionPerformed
 
