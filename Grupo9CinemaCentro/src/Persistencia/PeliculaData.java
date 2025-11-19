@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class PeliculaData {
 
-    private Connection conex ;
+    private Connection conex;
 
     public PeliculaData(Conexion conex) {
         this.conex = conex.conectar();
@@ -43,7 +43,6 @@ public class PeliculaData {
             ps.setString(5, p.getGenero());
             ps.setDate(6, Date.valueOf(p.getEstreno()));
             ps.setBoolean(7, p.isEnCartelera());
-            
 
             int filasAgregadas = ps.executeUpdate();
 
@@ -57,7 +56,7 @@ public class PeliculaData {
             if (filasAgregadas > 0) {
                 JOptionPane.showMessageDialog(null, "Pelicula guardada con el id: " + p.getIdPelicula());
             }
-            
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error al guardar pelicula. " + ex.getMessage());
         }
@@ -94,8 +93,7 @@ public class PeliculaData {
         }
         return peli;
     }
-    
-   
+
     public void borrarPelicula(int idPeli) {
         String delete = "DELETE FROM pelicula WHERE id_Pelicula = ?";
 
@@ -114,24 +112,25 @@ public class PeliculaData {
             JOptionPane.showMessageDialog(null, "Error al eliminar pelicula. " + e.getMessage());
         }
     }
- public void bajaPelicula(int id_Pelicula) {
+
+    public void bajaPelicula(int id_Pelicula) {
         String sql = "UPDATE pelicula SET enCartelera = 0 WHERE id_Pelicula = ?";
 
         try (PreparedStatement ps = conex.prepareStatement(sql)) {
             ps.setInt(1, id_Pelicula);
             ps.executeUpdate();
             JOptionPane.showMessageDialog(null, "Película dada de baja");
-           
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error al dar de baja película ");
         }
     }
-  public List<Pelicula> listarPeliculasEnCartelera() {
+
+    public List<Pelicula> listarPeliculasEnCartelera() {
         List<Pelicula> lista = new ArrayList<>();
         String sql = "SELECT * FROM pelicula WHERE enCartelera = 1 ";
 
-        try (PreparedStatement ps = conex.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conex.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Pelicula peli = new Pelicula();
@@ -143,15 +142,16 @@ public class PeliculaData {
                 peli.setGenero(rs.getString("genero"));
                 peli.setEstreno(rs.getDate("estreno").toLocalDate());
                 peli.setEnCartelera(rs.getBoolean("enCartelera"));
-               
+
                 lista.add(peli);
             }
-          
+
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al listar películas en cartelera: " );
+            JOptionPane.showMessageDialog(null, "Error al listar películas en cartelera: ");
         }
         return lista;
     }
+
     public void actualizarPelicula(Pelicula peli) {
         String update = "UPDATE pelicula SET titulo = ?, director = ?, actores = ?, origen = ?, genero = ?, estreno = ?, enCartelera = ? WHERE id_Pelicula = ?";
 
@@ -161,7 +161,7 @@ public class PeliculaData {
             statement.setString(3, peli.getActores());
             statement.setString(4, peli.getOrigen());
             statement.setString(5, peli.getGenero());
-            statement.setDate(6,java.sql.Date.valueOf( peli.getEstreno()));
+            statement.setDate(6, java.sql.Date.valueOf(peli.getEstreno()));
             statement.setBoolean(7, peli.isEnCartelera());
             statement.setInt(8, peli.getIdPelicula());
 
@@ -178,33 +178,50 @@ public class PeliculaData {
         }
     }
 
+    public List<Pelicula> listarPeliculas() {
+        List<Pelicula> lista = new ArrayList<>();
+        String sql = "SELECT * FROM pelicula";
 
-    
-    
-   
+        try (PreparedStatement ps = conex.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-    
-    
-    public void sacarDeCartelera(int idPeli) {
-    
-    String update = "UPDATE pelicula SET enCartelera = 0 WHERE id_Pelicula = ?";
+            while (rs.next()) {
+                Pelicula peli = new Pelicula();
+                peli.setIdPelicula(rs.getInt("id_Pelicula"));
+                peli.setTitulo(rs.getString("titulo"));
+                peli.setDirector(rs.getString("director"));
+                peli.setActores(rs.getString("actores"));
+                peli.setOrigen(rs.getString("origen"));
+                peli.setGenero(rs.getString("genero"));
+                peli.setEstreno(rs.getDate("estreno").toLocalDate());
+                peli.setEnCartelera(rs.getBoolean("enCartelera"));
 
-    try (PreparedStatement statement = conex.prepareStatement(update)) {
-        
-         
+                lista.add(peli);
+            }
 
-        statement.setInt(1, idPeli);
-
-        int filasAfectadas = statement.executeUpdate();
-
-        if (filasAfectadas > 0) {
-            JOptionPane.showMessageDialog(null, "Pelicula con ID " + idPeli + " fue sacada de cartelera.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Advertencia: No se encontró la pelicula para sacar de cartelera.");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al listar películas en cartelera: ");
         }
-
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(null, "Error al sacar la pelicula de cartelera: " + ex.getMessage());
+        return lista;
     }
-}
+
+    public void sacarDeCartelera(int idPeli) {
+
+        String update = "UPDATE pelicula SET enCartelera = 0 WHERE id_Pelicula = ?";
+
+        try (PreparedStatement statement = conex.prepareStatement(update)) {
+
+            statement.setInt(1, idPeli);
+
+            int filasAfectadas = statement.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                JOptionPane.showMessageDialog(null, "Pelicula con ID " + idPeli + " fue sacada de cartelera.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Advertencia: No se encontró la pelicula para sacar de cartelera.");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al sacar la pelicula de cartelera: " + ex.getMessage());
+        }
+    }
 }

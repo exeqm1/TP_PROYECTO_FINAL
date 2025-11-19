@@ -5,16 +5,20 @@
  */
 package Vistas;
 
+import Modelo.Comprador;
 import Modelo.Conexion;
 import Modelo.Lugar;
 import Modelo.Proyeccion;
 import Persistencia.LugarData;
 import Persistencia.ProyeccionData;
-import java.awt.TextField;
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -22,24 +26,88 @@ import javax.swing.JOptionPane;
  */
 public class lugarVista extends javax.swing.JInternalFrame {
 
-    private SistemaCine sc ;
-    
-    private Conexion con ;
-  private LugarData ld;
-   private  ProyeccionData pd;
+    private SistemaCine sistemaCine = new SistemaCine();
+
+    private Conexion conex = sistemaCine.conexionDb();
+    private LugarData lugarDAO = new LugarData(conex);
+    private ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+
+    DefaultTableModel modeloTableButacas;
+    TableRowSorter<DefaultTableModel> sortModelButacas;
+    ListSelectionListener selectorLista;
+
+    private void llenarTableButacas() {
+
+        DocumentListener listenerFiltro = new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                filtrarButacas();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                filtrarButacas();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                filtrarButacas();
+            }
+        };
+        LugarData lugarDAO = new LugarData(conex);
+        List<Lugar> listaLugares = lugarDAO.listarButacas();
+
+        tableButacas.setShowGrid(false);
+        modeloTableButacas = (DefaultTableModel) tableButacas.getModel();
+        modeloTableButacas.setRowCount(0);
+
+        for (Lugar l : listaLugares) {
+            modeloTableButacas.addRow(new Object[]{
+                l.getIdLugar(),
+                l.getProyeccion().toString(),
+                l.getFila(),
+                l.getNumero(),
+                l.getDisponible()
+            });
+            System.out.println(l.getProyeccion());
+        }
+
+        sortModelButacas = new TableRowSorter<>(modeloTableButacas);
+        tableButacas.setRowSorter(sortModelButacas);
+        txtIDButaca.getDocument().addDocumentListener(listenerFiltro);
+    }
+
+    private void filtrarButacas() {
+        String txtButaca = txtIDButaca.getText().trim();
+        if (txtButaca.isEmpty()) {
+            sortModelButacas.setRowFilter(null);
+        } else {
+            sortModelButacas.setRowFilter(RowFilter.regexFilter(txtButaca, 0));
+        }
+    }
+
+
+    public void llenarComboProyeccion() {
+        comboBoxProyeccion.removeAllItems();
+        for (Proyeccion p : proyeccionDAO.listarProyeccion()) {
+            comboBoxProyeccion.addItem(p);
+        }
+    }
+
+    public void limpiarCampos() {
+
+        txtFila.setText("");
+        txtNumero.setText("");
+        radioButtonDisponible.setSelected(false);
+        comboBoxProyeccion.setSelectedIndex(-1);
+    }
+
     public lugarVista(SistemaCine sc) {
-        
+
         initComponents();
-        
-        
-        this.sc=sc;
-        this.con=sc.conexionDb();
-       this.ld=new LugarData(con);
-        this.pd=new ProyeccionData(con);
-        
-        txtid.setEditable(false);
-        llenarcombo();
-        
+        tableButacas.setDefaultEditor(Object.class, null);
+        llenarComboProyeccion();
+        llenarTableButacas();
+        filtrarButacas();
+        buttonGuardarCambios.setEnabled(false);
+
     }
 
     /**
@@ -53,285 +121,343 @@ public class lugarVista extends javax.swing.JInternalFrame {
 
         jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        comboBoxProyeccion = new javax.swing.JComboBox<>();
+        txtFila = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        radioButtonDisponible = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jbnuevo = new java.awt.Button();
-        jbguardar = new java.awt.Button();
-        jbmodificar = new java.awt.Button();
-        jbdarbaja = new java.awt.Button();
-        jbbuscar = new java.awt.Button();
-        txtestado = new javax.swing.JCheckBox();
-        txtproyeccion = new javax.swing.JComboBox<>();
-        txtid = new javax.swing.JTextField();
-        txtfila = new javax.swing.JTextField();
-        txtnumero = new javax.swing.JTextField();
-        jbsalir = new java.awt.Button();
+        txtNumero = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableButacas = new javax.swing.JTable();
+        buttonGuardar = new javax.swing.JButton();
+        buttonModificar = new javax.swing.JButton();
+        txtIDButaca = new javax.swing.JTextField();
+        buttonGuardarCambios = new javax.swing.JButton();
+        buttonEliminar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         jLabel6.setText("jLabel6");
 
-        jLabel1.setText("lugar/asiento");
+        jLabel1.setText("GESTION DE ASIENTOS");
 
-        jLabel2.setText("ID");
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel3.setText("Proyeccion");
+        jLabel5.setText("Numero:");
 
-        jLabel4.setText("fila");
-
-        jLabel5.setText("numero");
-
-        jbnuevo.setLabel("Nuevo");
-        jbnuevo.addActionListener(new java.awt.event.ActionListener() {
+        radioButtonDisponible.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbnuevoActionPerformed(evt);
+                radioButtonDisponibleActionPerformed(evt);
             }
         });
 
-        jbguardar.setLabel("guardar");
-        jbguardar.addActionListener(new java.awt.event.ActionListener() {
+        jLabel3.setText("Proyeccion:");
+
+        jLabel4.setText("Fila:");
+
+        jLabel7.setText("Crear Butaca");
+
+        jLabel8.setText("Disponible:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(12, 12, 12))
+                            .addComponent(jLabel8))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtNumero)
+                                .addComponent(comboBoxProyeccion, 0, 126, Short.MAX_VALUE))
+                            .addComponent(radioButtonDisponible)
+                            .addComponent(txtFila, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(115, 115, 115)
+                        .addComponent(jLabel7)))
+                .addContainerGap(107, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7)
+                .addGap(33, 33, 33)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(comboBoxProyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtFila, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(radioButtonDisponible)
+                    .addComponent(jLabel8))
+                .addContainerGap(12, Short.MAX_VALUE))
+        );
+
+        tableButacas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Proyeccion", "Fila", "Numero", "Disponible"
+            }
+        ));
+        jScrollPane1.setViewportView(tableButacas);
+
+        buttonGuardar.setText("Guardar");
+        buttonGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbguardarActionPerformed(evt);
+                buttonGuardarActionPerformed(evt);
             }
         });
 
-        jbmodificar.setLabel("modificar");
-        jbmodificar.addActionListener(new java.awt.event.ActionListener() {
+        buttonModificar.setText("Modificar");
+        buttonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbmodificarActionPerformed(evt);
+                buttonModificarActionPerformed(evt);
             }
         });
 
-        jbdarbaja.setLabel("dar baja");
-        jbdarbaja.addActionListener(new java.awt.event.ActionListener() {
+        buttonGuardarCambios.setText("Guardar Cambios");
+        buttonGuardarCambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbdarbajaActionPerformed(evt);
+                buttonGuardarCambiosActionPerformed(evt);
             }
         });
 
-        jbbuscar.setLabel("buscar");
-        jbbuscar.addActionListener(new java.awt.event.ActionListener() {
+        buttonEliminar.setText("Eliminar");
+        buttonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbbuscarActionPerformed(evt);
+                buttonEliminarActionPerformed(evt);
             }
         });
 
-        txtestado.setText("disponible");
-        txtestado.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtestadoActionPerformed(evt);
-            }
-        });
-
-        jbsalir.setLabel("salir");
-        jbsalir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbsalirActionPerformed(evt);
-            }
-        });
+        jLabel2.setText("Buscar Butaca por ID:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(326, 326, 326)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(49, 49, 49)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(156, 156, 156)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtnumero, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtproyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtfila, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbnuevo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbguardar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(37, 37, 37)
-                                .addComponent(txtestado)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jbbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbmodificar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbdarbaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbsalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(198, Short.MAX_VALUE))
+                    .addComponent(buttonGuardar)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 416, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buttonEliminar)
+                    .addComponent(buttonGuardarCambios)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonModificar))))
+                .addGap(46, 46, 46))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(25, 25, 25)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtproyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel4)
-                        .addComponent(txtfila, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(txtnumero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtestado)
-                                .addGap(38, 38, 38))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(19, 19, 19)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jbguardar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbnuevo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbmodificar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jbdarbaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbsalir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(35, Short.MAX_VALUE))
+                        .addComponent(jLabel2)
+                        .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(buttonModificar))
+                    .addComponent(buttonGuardar))
+                .addGap(9, 9, 9)
+                .addComponent(buttonGuardarCambios)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonEliminar)
+                .addGap(272, 272, 272))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jbguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbguardarActionPerformed
-     
-        
-            if (txtfila.getText().trim().isEmpty() || txtnumero.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Debe completar los campos de fila y número.");
-                return;
-            }
-           
-        Lugar lugar;
-        
-       Proyeccion pe=(Proyeccion) txtproyeccion.getSelectedItem();
-      try{
-       int fila=Integer.parseInt(txtfila.getText());
-       int nro=Integer.parseInt(txtnumero.getText());
-     
-       boolean estado=txtestado.isSelected();
-       lugar=new Lugar(pe,fila,nro,estado);
-       ld.insertButaca(lugar);
-       limpiar();
-       txtid.setEditable(false);
-        } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Fila y número deben ser valores numéricos");
-                return;
-            }
-    }//GEN-LAST:event_jbguardarActionPerformed
-
-    private void jbnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbnuevoActionPerformed
-        limpiar();
-        txtid.setText("");
-        txtid.setEditable(false);
-    }//GEN-LAST:event_jbnuevoActionPerformed
-
-    private void jbmodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbmodificarActionPerformed
-       txtid.setEditable(true);
-       Lugar lugar=  ld.buscarButaca(Integer.parseInt(txtid.getText()));
-       txtfila.setText(String.valueOf(lugar.getFila()));
-       txtnumero.setText(String.valueOf(lugar.getNumero()));
-       txtproyeccion.setSelectedItem(lugar.getProyeccion());
-       txtestado.setSelected(lugar.getDisponible());
-       
-    }//GEN-LAST:event_jbmodificarActionPerformed
-
-    private void jbdarbajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbdarbajaActionPerformed
-       ld.liberarLugar(Integer.parseInt(txtid.getText()));
-       txtid.setText("");
-       txtid.setEditable(false);
-    }//GEN-LAST:event_jbdarbajaActionPerformed
-
-    private void jbbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbbuscarActionPerformed
-     txtid.setEditable(true);
-        int id=  Integer.parseInt(txtid.getText());
-        try{
-      Lugar lugar=  ld.buscarButaca(id);
-       
-      
-        txtproyeccion.setSelectedItem(lugar.getProyeccion());
-     txtfila.setText(String.valueOf(lugar.getFila()));
-      txtnumero.setText(String.valueOf(lugar.getNumero()));
-      txtestado.setSelected(lugar.getDisponible());
-       }catch(Exception e){
-        JOptionPane.showMessageDialog(null, "ingrese el id");
-        return;
-        }
-    }//GEN-LAST:event_jbbuscarActionPerformed
-
-    private void jbsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbsalirActionPerformed
-        dispose();
-    }//GEN-LAST:event_jbsalirActionPerformed
-
-    private void txtestadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtestadoActionPerformed
+    private void radioButtonDisponibleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonDisponibleActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtestadoActionPerformed
+    }//GEN-LAST:event_radioButtonDisponibleActionPerformed
+
+    private void buttonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarActionPerformed
+        if (txtFila.getText().trim().isEmpty() || txtNumero.getText().trim().isEmpty() || comboBoxProyeccion.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Debe completar todos los campos.");
+            return;
+        }
+
+        Proyeccion pro = (Proyeccion) comboBoxProyeccion.getSelectedItem();
+
+        try {
+            int fila = Integer.parseInt(txtFila.getText());
+            int nro = Integer.parseInt(txtNumero.getText());
+            boolean estado = radioButtonDisponible.isSelected();
+            Lugar lugar = new Lugar(pro, fila, nro, estado);
+            lugarDAO.insertButaca(lugar);
+            limpiarCampos();
+            // txtID.setEditable(false);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Fila y número deben ser valores numéricos");
+            return;
+        }
+    }//GEN-LAST:event_buttonGuardarActionPerformed
+
+    private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
+        if (tableButacas.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(rootPane, "Seleccione una butaca de la lista.");
+        }
+        tableButacas.setRowSelectionAllowed(true);
+        
+        selectorLista = (e -> {
+            if (!e.getValueIsAdjusting()) {
+                int fila = tableButacas.getSelectedRow();
+
+                if (fila >= 0) {
+                    int id = (int) tableButacas.getValueAt(fila, 0);
+                    System.out.println("Fila seleccionada. ID: " + id);
+
+                    Lugar lugar = lugarDAO.buscarButaca(id);
+                    if (lugar != null) {
+                        Proyeccion pro = lugar.getProyeccion();
+
+                        for (int i = 0; i < comboBoxProyeccion.getItemCount(); i++) {
+                            Proyeccion item = comboBoxProyeccion.getItemAt(i);
+                            if (item.getIdProyeccion() == pro.getIdProyeccion()) {
+                                comboBoxProyeccion.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+
+                        txtFila.setText(String.valueOf(lugar.getFila()));
+                        txtNumero.setText(String.valueOf(lugar.getNumero()));
+                        radioButtonDisponible.setSelected(lugar.getDisponible());
+                    }
+                }
+            }
+        });
+        
+        tableButacas.getSelectionModel().addListSelectionListener(selectorLista);
+        
+        buttonGuardar.setEnabled(false);
+        buttonGuardarCambios.setEnabled(true);
+    }//GEN-LAST:event_buttonModificarActionPerformed
+
+    private void buttonGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarCambiosActionPerformed
+        if (tableButacas.getSelectedRow() >= 0) {
+
+            if (comboBoxProyeccion.getSelectedItem() == null || txtFila.getText().isEmpty() || txtNumero.getText().isEmpty() || radioButtonDisponible == null) {
+                JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
+                return;
+            }
+
+            int id = (int) tableButacas.getValueAt(tableButacas.getSelectedRow(), 0);
+            Proyeccion pro = (Proyeccion) comboBoxProyeccion.getSelectedItem();
+            boolean disponible = radioButtonDisponible.isSelected();
+
+            int fila;
+            int numero;
+
+            try {
+                fila = Integer.valueOf(txtFila.getText());
+                numero = Integer.valueOf(txtNumero.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ingrese formato valido para campo numerico");
+                return;
+            }
+
+            Lugar lugar = new Lugar(id, pro, fila, numero, disponible);
+
+            lugarDAO.actualizarButaca(lugar);
+            llenarTableButacas();
+            limpiarCampos();
+            
+            if (selectorLista != null) {
+                tableButacas.getSelectionModel().removeListSelectionListener(selectorLista);
+                selectorLista = null; 
+            }
+            
+            buttonGuardarCambios.setEnabled(false);
+            buttonGuardar.setEnabled(true);
+        }
+
+    }//GEN-LAST:event_buttonGuardarCambiosActionPerformed
+
+    private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
+        if (tableButacas.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(rootPane, "Seleccione una butaca de la lista.");
+            return;
+        }
+
+        int id = (int) tableButacas.getValueAt(tableButacas.getSelectedRow(), 0);
+
+        Object[] opciones = {"Si", "No"};
+
+        int resultado = JOptionPane.showOptionDialog(rootPane, "¿Seguro que desea eliminar la butaca?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+        if (resultado == 0) {
+            lugarDAO.borrarButaca(id);
+        }
+
+        llenarTableButacas();
+    }//GEN-LAST:event_buttonEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEliminar;
+    private javax.swing.JButton buttonGuardar;
+    private javax.swing.JButton buttonGuardarCambios;
+    private javax.swing.JButton buttonModificar;
+    private javax.swing.JComboBox<Proyeccion> comboBoxProyeccion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private java.awt.Button jbbuscar;
-    private java.awt.Button jbdarbaja;
-    private java.awt.Button jbguardar;
-    private java.awt.Button jbmodificar;
-    private java.awt.Button jbnuevo;
-    private java.awt.Button jbsalir;
-    private javax.swing.JCheckBox txtestado;
-    private javax.swing.JTextField txtfila;
-    private javax.swing.JTextField txtid;
-    private javax.swing.JTextField txtnumero;
-    private javax.swing.JComboBox<Proyeccion> txtproyeccion;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JCheckBox radioButtonDisponible;
+    private javax.swing.JTable tableButacas;
+    private javax.swing.JTextField txtFila;
+    private javax.swing.JTextField txtIDButaca;
+    private javax.swing.JTextField txtNumero;
     // End of variables declaration//GEN-END:variables
-public void llenarcombo(){
-    txtproyeccion.removeAllItems();
-    for(Proyeccion p: pd.listarProyeccion()){
-    
-    txtproyeccion.addItem(p);
-    }
-
-
-
-}
-public void limpiar() {
-    txtid.setText("");
-    txtfila.setText("");
-    txtnumero.setText("");
-    txtestado.setSelected(false);
-    txtproyeccion.setSelectedIndex(-1); 
-}
-
 
 }

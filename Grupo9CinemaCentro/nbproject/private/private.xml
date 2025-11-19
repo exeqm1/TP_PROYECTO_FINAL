@@ -3,16 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/compradorVista.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Persistencia/CompradorData.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Modelo/Comprador.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Persistencia/PeliculaData.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Persistencia/SalaData.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Modelo/Sala.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/VentaOnline.java</file>
+            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/peliculaVista.java</file>
+            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/lugarVista.java</file>
             <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/VentaPresencial.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Persistencia/ProyeccionData.java</file>
-            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Vistas/SistemaCine.java</file>
+            <file>file:/C:/Users/PC1/Desktop/Facu/LabProg/TP_PROYECTO_FINAL/TP_PROYECTO_FINAL/Grupo9CinemaCentro/src/Persistencia/PeliculaData.java</file>
         </group>
     </open-files>
 </project-private>

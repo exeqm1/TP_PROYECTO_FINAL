@@ -8,7 +8,6 @@ package Vistas;
 import Modelo.Comprador;
 import Modelo.Conexion;
 import Persistencia.CompradorData;
-import Persistencia.PeliculaData;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -16,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -28,6 +28,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
     private SistemaCine sc = new SistemaCine();
     Conexion conex = sc.conexionDb();
     CompradorData compradorDAO = new CompradorData(conex);
+    ListSelectionListener selectorLista;
 
     DefaultTableModel modeloTableComprador;
     TableRowSorter<DefaultTableModel> sortModelComprador;
@@ -78,28 +79,6 @@ public class compradorVista extends javax.swing.JInternalFrame {
         }
     }
 
-    private void seleccionComprador() {
-        tableCompradores.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {  // evita doble disparo
-                int fila = tableCompradores.getSelectedRow();
-
-                if (fila >= 0) {
-                    int id = (int) tableCompradores.getValueAt(fila, 0);
-                    System.out.println("Fila seleccionada. ID: " + id);
-
-                    Comprador comprador = compradorDAO.buscarComprador(id);
-                    if (comprador != null) {
-                        txtNombre.setText(comprador.getNombre());
-                        txtDNI.setText(String.valueOf(comprador.getDni()));
-                        txtPassword.setText(comprador.getPassword());
-                        dateChooserFecha.setDate(java.sql.Date.valueOf(comprador.getFechaNac()));
-                        comboBoxPago.setSelectedItem(comprador.getMedioPago());
-                    }
-                }
-            }
-        });
-    }
-    
     private void limpiarCampos() {
         txtIDComprador.setText("");
         txtDNI.setText("");
@@ -118,7 +97,6 @@ public class compradorVista extends javax.swing.JInternalFrame {
         llenarTableCompradores();
         filtrarCompradores();
         buttonGuardarCambios.setEnabled(false);
-
     }
 
     /**
@@ -365,16 +343,56 @@ public class compradorVista extends javax.swing.JInternalFrame {
     private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
         if (tableCompradores.getSelectedRow() < 0) {
             JOptionPane.showMessageDialog(rootPane, "Seleccione un cliente de la lista.");
+            return;
         }
         tableCompradores.setRowSelectionAllowed(true);
-        seleccionComprador();
+
+        selectorLista = (e -> {
+            if (!e.getValueIsAdjusting()) {
+                int fila = tableCompradores.getSelectedRow();
+
+                if (fila >= 0) {
+                    int id = (int) tableCompradores.getValueAt(fila, 0);
+                    System.out.println("Fila seleccionada. ID: " + id);
+
+                    Comprador comprador = compradorDAO.buscarComprador(id);
+                    if (comprador != null) {
+                        txtNombre.setText(comprador.getNombre());
+                        txtDNI.setText(String.valueOf(comprador.getDni()));
+                        txtPassword.setText(comprador.getPassword());
+                        dateChooserFecha.setDate(java.sql.Date.valueOf(comprador.getFechaNac()));
+                        comboBoxPago.setSelectedItem(comprador.getMedioPago());
+                    }
+                }
+            }
+        });
+
+        tableCompradores.getSelectionModel().addListSelectionListener(selectorLista);
+
         buttonGuardar.setEnabled(false);
         buttonGuardarCambios.setEnabled(true);
 
     }//GEN-LAST:event_buttonModificarActionPerformed
 
     private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
+        if (tableCompradores.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(rootPane, "Seleccione un cliente de la lista.");
+            return;
+        }
 
+        int id = (int) tableCompradores.getValueAt(tableCompradores.getSelectedRow(), 0);
+
+        compradorDAO = new CompradorData(conex);
+
+        Object[] opciones = {"Si", "No"};
+
+        int resultado = JOptionPane.showOptionDialog(rootPane, "¿Seguro que desea eliminar al cliente?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+        if (resultado == 0) {
+            compradorDAO.eliminarComprador(id);
+        }
+
+        llenarTableCompradores();
 
 
     }//GEN-LAST:event_buttonEliminarActionPerformed
@@ -426,7 +444,14 @@ public class compradorVista extends javax.swing.JInternalFrame {
             compradorDAO.modificarComprador(comprador);
             llenarTableCompradores();
             limpiarCampos();
+
+            if (selectorLista != null) {
+                tableCompradores.getSelectionModel().removeListSelectionListener(selectorLista);
+                selectorLista = null; 
+            }
+
             buttonGuardar.setEnabled(true);
+
         }
     }//GEN-LAST:event_buttonGuardarCambiosActionPerformed
 
