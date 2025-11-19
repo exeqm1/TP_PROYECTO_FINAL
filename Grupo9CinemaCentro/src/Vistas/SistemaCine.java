@@ -192,6 +192,10 @@ public class SistemaCine extends javax.swing.JFrame {
 
         escritorio1.add(GUI);
         escritorio1.moveToFront(GUI);
+
+        GUI.setBorder(null);
+        ((BasicInternalFrameUI) GUI.getUI()).setNorthPane(null);
+    
     }//GEN-LAST:event_menupeliculaActionPerformed
 
     private void menuproyeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuproyeccionActionPerformed
@@ -203,6 +207,10 @@ public class SistemaCine extends javax.swing.JFrame {
 
         escritorio1.add(GUI);
         escritorio1.moveToFront(GUI);
+
+        GUI.setBorder(null);
+        ((BasicInternalFrameUI) GUI.getUI()).setNorthPane(null);
+
     }//GEN-LAST:event_menuproyeccionActionPerformed
 
     private void menucompradorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menucompradorActionPerformed
@@ -214,8 +222,8 @@ public class SistemaCine extends javax.swing.JFrame {
 
         escritorio1.add(GUI);
         escritorio1.moveToFront(GUI);
-        
-        GUI.setBorder(null); 
+
+        GUI.setBorder(null);
         ((BasicInternalFrameUI) GUI.getUI()).setNorthPane(null);
     }//GEN-LAST:event_menucompradorActionPerformed
 
@@ -235,15 +243,15 @@ public class SistemaCine extends javax.swing.JFrame {
     }//GEN-LAST:event_menuticketActionPerformed
 
     private void jmenuticketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmenuticketActionPerformed
-       VentaPresencial gui = new VentaPresencial(this);
+        VentaPresencial gui = new VentaPresencial(this);
         escritorio1.moveToFront(gui);
         escritorio1.removeAll();
         escritorio1.repaint();
-        
+
         escritorio1.add(gui);
         gui.setVisible(true);
-        
-        gui.setBorder(null); 
+
+        gui.setBorder(null);
         ((BasicInternalFrameUI) gui.getUI()).setNorthPane(null);
 
     }//GEN-LAST:event_jmenuticketActionPerformed
@@ -271,16 +279,29 @@ public class SistemaCine extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                }
+                
+
+}
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SistemaCine.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
