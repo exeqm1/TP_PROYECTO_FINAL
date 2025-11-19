@@ -64,7 +64,7 @@ public class SistemaCine extends javax.swing.JFrame {
         jmenuticket = new javax.swing.JMenuItem();
         menupelicula = new javax.swing.JMenuItem();
         jventa = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menuonline = new javax.swing.JMenuItem();
 
         jMenu3.setText("File");
         jMenuBar2.add(jMenu3);
@@ -173,8 +173,13 @@ public class SistemaCine extends javax.swing.JFrame {
 
         jventa.setText("venta");
 
-        jMenuItem1.setText("Venta Online");
-        jventa.add(jMenuItem1);
+        menuonline.setText("Venta Online");
+        menuonline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuonlineActionPerformed(evt);
+            }
+        });
+        jventa.add(menuonline);
 
         jMenuBar1.add(jventa);
 
@@ -257,6 +262,15 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.moveToFront(gui);
     }//GEN-LAST:event_LugarActionPerformed
 
+    private void menuonlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuonlineActionPerformed
+        VentaOnline gui = new VentaOnline(this);
+escritorio1.removeAll();
+escritorio1.add(gui);
+gui.setVisible(true);
+escritorio1.moveToFront(gui);
+
+    }//GEN-LAST:event_menuonlineActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -304,7 +318,6 @@ public class SistemaCine extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuBar jMenuBar3;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JMenuItem jmenuticket;
     private javax.swing.JMenu jventa;
@@ -321,6 +334,7 @@ public class SistemaCine extends javax.swing.JFrame {
     private java.awt.MenuBar menuBar3;
     private java.awt.MenuBar menuBar4;
     private javax.swing.JMenuItem menucomprador;
+    private javax.swing.JMenuItem menuonline;
     private javax.swing.JMenuItem menupelicula;
     private javax.swing.JMenuItem menuproyeccion;
     private javax.swing.JMenuItem menusala;

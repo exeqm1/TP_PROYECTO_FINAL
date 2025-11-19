@@ -174,10 +174,13 @@
             <Property name="text" type="java.lang.String" value="venta"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="menuonline">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Venta Online"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuonlineActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
