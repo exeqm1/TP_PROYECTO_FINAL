@@ -223,4 +223,56 @@ public class TicketData {
         return lista;
     }
 
+    public List<Ticket> listarTickets2() {
+        List<Ticket> lista = new ArrayList<>();
+        String sql = "SELECT * FROM ticket";
+
+        try (PreparedStatement ps = conec.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Ticket ticket = new Ticket();
+
+                ticket.setIdTicket(rs.getInt("Id_ticket"));
+
+                int Id_comprador = rs.getInt("Id_comprador");
+                int Id_lugar = rs.getInt("Id_lugar");
+
+                // --- Manejo seguro de fechas ---
+                Date fCompra = rs.getDate("fechaCompra");
+                if (fCompra != null) {
+                    ticket.setFechaCompra(fCompra.toLocalDate());
+                }
+
+                Date fFuncion = rs.getDate("fechaFuncion");
+                if (fFuncion != null) {
+                    ticket.setFechaFuncion(fFuncion.toLocalDate());
+                }
+
+                ticket.setMonto(rs.getDouble("monto"));
+                ticket.setActivo(rs.getBoolean("activo"));
+
+                // --- Buscar comprador ---
+                Comprador comprador = compradorData.buscarComprador(Id_comprador);
+                if (comprador == null) {
+                    System.out.println("⚠ Comprador no encontrado: " + Id_comprador);
+                }
+                ticket.setComprador(comprador);
+
+                // --- Buscar asiento ---
+                Lugar asiento = lugarData.buscarButaca(Id_lugar);
+                if (asiento == null) {
+                    System.out.println("⚠ Asiento no encontrado: " + Id_lugar);
+                }
+                ticket.setAsiento(asiento);
+
+                lista.add(ticket);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(TicketData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return lista;
+    }
+
 }

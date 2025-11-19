@@ -180,9 +180,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                 comboBoxProyeccion.addItem(p);
             }
         }
-        }
-
-    
+    }
 
     private void listenerSala() {
 
@@ -231,6 +229,24 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         }
     }
 
+    //========== Metodos Suma Total ===============
+    private void sumaTotal() {
+        Proyeccion proyeccionSeleccionada = (Proyeccion) comboBoxProyeccion.getSelectedItem();
+
+        if (proyeccionSeleccionada == null) {
+            txtTotal.setText("0"); // o algún valor por defecto
+            return;
+        }
+        
+        double precio3D = 0;
+        String precioFinal;
+        if (proyeccionSeleccionada.isEs3D()) {
+            precio3D = 3500;
+        }
+        precioFinal = String.valueOf(precio3D + proyeccionSeleccionada.getPrecio());
+        txtTotal.setText(precioFinal);
+    }
+
     public VentaPresencial(SistemaCine sc) {
         setSize(800, 600);
         setResizable(false);
@@ -244,6 +260,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         llenarListPeliculas();
         listenerPeliculas();
         listenerProyeccion();
+        sumaTotal();
 
         if (comboBoxPeliculas.getItemCount() > 0) {
             Pelicula seleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
@@ -277,7 +294,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         jLabel15 = new javax.swing.JLabel();
         dateChooserFuncion = new com.toedter.calendar.JDateChooser();
         jLabel16 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtTotal = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         comboBoxSala = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
@@ -347,9 +364,9 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel16.setText("Total:");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtTotal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtTotalActionPerformed(evt);
             }
         });
 
@@ -385,7 +402,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                                 .addGap(105, 105, 105)
                                 .addComponent(jLabel16)
                                 .addGap(24, 24, 24)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
                             .addGap(93, 93, 93)
                             .addComponent(jLabel11)
@@ -439,7 +456,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -667,7 +684,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         boolean estado = true;
         Proyeccion funcion = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 
-
         TicketData ticketDAO = new TicketData(conex);
         Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);
         ticketDAO.guardarTicket(ticket);
@@ -711,9 +727,9 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_comboBoxProyeccionActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtTotalActionPerformed
 
     private void comboBoxSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxSalaActionPerformed
         // TODO add your handling code here:
@@ -752,11 +768,11 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tableCompradores;
     private javax.swing.JTable tableTicket;
     private javax.swing.JTextField txtIDComprador;
     private javax.swing.JTextField txtIDTicket;
+    private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
 
 }
