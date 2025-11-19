@@ -83,10 +83,10 @@ public class VentaOnline extends javax.swing.JInternalFrame {
         txttarjeta = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         txttitular = new javax.swing.JTextField();
-        txtexpira = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         txtcod = new javax.swing.JTextField();
+        txtexpira = new com.toedter.calendar.JDateChooser();
         jPanel1 = new javax.swing.JPanel();
         Sala = new javax.swing.JLabel();
         jcpelicula = new javax.swing.JComboBox<>();
@@ -185,20 +185,21 @@ public class VentaOnline extends javax.swing.JInternalFrame {
                     .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(txtcod, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
-                    .addComponent(txtexpira))
+                .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtcod, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtexpira, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         panelTarjetaLayout.setVerticalGroup(
             panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelTarjetaLayout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(txttarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtexpira, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
+                .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel8)
+                        .addComponent(txttarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10))
+                    .addComponent(txtexpira, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelTarjetaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txttitular, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -388,7 +389,7 @@ public class VentaOnline extends javax.swing.JInternalFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(129, Short.MAX_VALUE))
+                .addContainerGap(126, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -628,7 +629,7 @@ public class VentaOnline extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panelTarjeta;
     private javax.swing.JTable tlugar;
     private javax.swing.JTextField txtcod;
-    private javax.swing.JTextField txtexpira;
+    private com.toedter.calendar.JDateChooser txtexpira;
     private javax.swing.JTextField txtid;
     private javax.swing.JComboBox<String> txtmetodo;
     private javax.swing.JTextField txttarjeta;
@@ -678,18 +679,20 @@ public class VentaOnline extends javax.swing.JInternalFrame {
 
         String nombre = txttitular.getText().trim();
         String numero = txttarjeta.getText().trim();
-        String venc = txtexpira.getText().trim();
+       
         String cvv = txtcod.getText().trim();
 
-        if (nombre.isEmpty() || numero.isEmpty() || venc.isEmpty() || cvv.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Completá todos los datos de la tarjeta");
-            return false;
-        }
+        if (nombre.isEmpty() 
+        || numero.isEmpty() 
+        || txtexpira.getDate() == null 
+        || cvv.isEmpty()) {
 
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Falta el nombre del titular");
-            return false;
-        }
+    JOptionPane.showMessageDialog(this, "Completá todos los datos de la tarjeta");
+    return false;
+}
+
+
+       
 
         return true;
     }

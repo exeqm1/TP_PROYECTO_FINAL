@@ -32,7 +32,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
     DefaultTableModel modeloTableTicket;
     TableRowSorter<DefaultTableModel> sortModelTicket;
 
-    //======== Metodos Table Ticket ========
     private void llenarTableTicket() {
         DocumentListener listenerFiltro = new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
@@ -83,7 +82,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         }
     }
 
-    //========== Metodos Table Comprador ===========
+ 
     private void llenarTableCompradores() {
 
         DocumentListener listenerFiltro = new DocumentListener() {
@@ -127,7 +126,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         }
     }
 
-    //========== Metodos ComboBox Pelicula ===========
+   
     private void llenarListPeliculas() {
         PeliculaData peliculaDAO = new PeliculaData(conex);
         List<Pelicula> listaPeliculas = peliculaDAO.listarPeliculasEnCartelera();
@@ -136,11 +135,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
             comboBoxPeliculas.addItem(p);
         }
 
-//        if (comboBoxPeliculas.getItemCount() > 0) {
-//            Pelicula preseleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
-//            comboBoxProyeccion.removeAllItems();
-//            llenarListProyeccion(preseleccionada);    
-//            }   
+  
     }
 
     private void listenerPeliculas() {
@@ -158,7 +153,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         });
     }
 
-    //========== Metodos ComboBox Sala ============
+    
     private void llenarListSalas(Pelicula peli) {
         ProyeccionData proyeccionDAO = new ProyeccionData(conex);
         List<Sala> salas = proyeccionDAO.salasPorPelicula(peli.getIdPelicula());
@@ -203,7 +198,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         });
     }
 
-    //========== Metodos ComboBox Proyeccion ===========
+    
     private void listenerProyeccion() {
         comboBoxProyeccion.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -215,9 +210,9 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         });
     }
 
-    //========== Metodos ComboBox Butacas ===========
+ 
     private void llenarListButacas(Proyeccion pro) {
-        //Proyeccion itemSeleccionado = (Proyeccion) comboBoxProyeccion.getSelectedItem();
+        
         LugarData lugarDAO = new LugarData(conex);
 
         if (pro != null) {
