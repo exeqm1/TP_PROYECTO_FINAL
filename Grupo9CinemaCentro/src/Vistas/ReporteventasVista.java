@@ -195,9 +195,13 @@ public class ReporteventasVista extends javax.swing.JInternalFrame {
 
         List<Object[]> lista = ticketData.listarVentas(idPelicula, desde, hasta);
 
+        double totalGeneral=0;
         for (Object[] fila : lista) {
             modelo.addRow(fila);
+            totalGeneral +=(double)fila[6];
         }
+        jTextField1.setText(String.valueOf(totalGeneral));
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
