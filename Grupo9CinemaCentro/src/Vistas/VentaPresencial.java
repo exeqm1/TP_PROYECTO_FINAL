@@ -229,7 +229,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         }
     }
 
-    //========== Metodos Suma Total ===============
+    
     private void sumaTotal() {
         Proyeccion proyeccionSeleccionada = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 

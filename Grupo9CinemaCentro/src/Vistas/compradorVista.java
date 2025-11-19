@@ -92,8 +92,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
     public compradorVista(SistemaCine sc) {
         initComponents();
         tableCompradores.setDefaultEditor(Object.class, null);
-        //tableCompradores.setRowSelectionAllowed(false);
-        //tableCompradores.setCellSelectionEnabled(false);
+       
         llenarTableCompradores();
         filtrarCompradores();
         buttonGuardarCambios.setEnabled(false);
