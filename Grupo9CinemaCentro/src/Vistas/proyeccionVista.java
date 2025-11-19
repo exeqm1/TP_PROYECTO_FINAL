@@ -99,8 +99,12 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
     public proyeccionVista(SistemaCine sc) {
         initComponents();
+        tableProyecciones.setDefaultEditor(Object.class, null);
         cargarPelicula();
         cargarSala();
+        llenarTableProyeccion();
+        filtrarProyeccion();
+        buttonGuardarCambios.setEnabled(false);
     }
 
     /**
@@ -292,13 +296,13 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
         tableProyecciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "Pelicula", "Sala", "Idioma", "3D", "Subtitulada", "Hora Inicio", "Hora Fin", "Precio", "Activa"
             }
         ));
         jScrollPane1.setViewportView(tableProyecciones);
@@ -330,7 +334,7 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtProyeccionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtProyeccionID, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(buttonEliminar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -340,7 +344,7 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(80, 80, 80))))
             .addGroup(layout.createSequentialGroup()
-                .addGap(324, 324, 324)
+                .addGap(309, 309, 309)
                 .addComponent(buttonGuardar)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -411,20 +415,76 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
             boolean activa = true;
 
             p = new Proyeccion(pe, sa, idioma, es3d, subtitulada, inicio, fin, precio, activa);
-            
+
             ProyeccionData proyeccionDAO = new ProyeccionData(conex);
             proyeccionDAO.agregarProyeccion(p);
-            
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "ingrese un numero valido");
         } catch (Exception o) {
             JOptionPane.showMessageDialog(null, "ingrese la hora correctamente");
         }
         limpiar();
+        llenarTableProyeccion();
     }//GEN-LAST:event_buttonGuardarActionPerformed
 
     private void buttonGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarCambiosActionPerformed
 
+        if (tableProyecciones.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar una proyección para modificar.");
+            return;
+        }
+
+        if (comboBoxPelicula.getSelectedItem() == null
+                || comboBoxSala.getSelectedItem() == null
+                || txtIdioma.getText().isEmpty()
+                || txtPrecio.getText().isEmpty()
+                || txtHoraInicio.getText().isEmpty()
+                || txtHoraFin.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
+            return;
+        }
+
+        int idProyeccion = (int) tableProyecciones.getValueAt(tableProyecciones.getSelectedRow(), 0);
+
+        Pelicula peli = (Pelicula) comboBoxPelicula.getSelectedItem();
+        Sala sala = (Sala) comboBoxSala.getSelectedItem();
+
+        String idioma = txtIdioma.getText();
+        boolean es3D = radioButton3D.isSelected();
+        boolean subtitulada = radioButtonSub.isSelected();
+        boolean activa = radioButtonActiva.isSelected();
+
+        double precio;
+        LocalTime horaInicio, horaFin;
+
+        try {
+            precio = Double.parseDouble(txtPrecio.getText());
+            horaInicio = LocalTime.parse(txtHoraInicio.getText());
+            horaFin = LocalTime.parse(txtHoraFin.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Revisar formatos precio (numerico) y horas (HH:mm)");
+            return;
+        }
+
+        Proyeccion pro = new Proyeccion(idProyeccion, peli, sala, idioma, es3D, subtitulada, horaInicio, horaFin, precio, activa);
+
+        ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+        proyeccionDAO.modificarProyeccion(pro);
+
+        llenarTableProyeccion();
+
+        limpiar();
+
+        if (selectorLista != null) {
+            tableProyecciones.getSelectionModel().removeListSelectionListener(selectorLista);
+            selectorLista = null;
+        }
+
+        buttonGuardarCambios.setEnabled(false);
+        buttonGuardar.setEnabled(true);
+
+        JOptionPane.showMessageDialog(null, "Proyección actualizada correctamente.");
     }//GEN-LAST:event_buttonGuardarCambiosActionPerformed
 
     private void radioButtonActivaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonActivaActionPerformed
@@ -433,49 +493,63 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
     private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
 
-        Pelicula pe = (Pelicula) comboBoxPelicula.getSelectedItem();
-        Sala sa = (Sala) comboBoxSala.getSelectedItem();
-        try {
-            boolean es3d = radioButton3D.isSelected();
-            boolean subtitulada = radioButtonSub.isSelected();
-
-            double precio = Double.parseDouble(txtPrecio.getText());
-            if (precio <= 0) {
-                JOptionPane.showMessageDialog(null, "El precio debe ser mayor a 0.");
-                txtPrecio.requestFocus();
-                return;
-            }
-
-            if (txtHoraInicio.getText().isEmpty() || txtHoraFin.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "debe ingresar la hora");
-
-            }
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime inicio = LocalTime.parse(txtHoraInicio.getText(), formato);
-
-            LocalTime fin = LocalTime.parse(txtHoraFin.getText(), formato);
-            if (fin.isBefore(inicio)) {
-                JOptionPane.showMessageDialog(null, " ingrese la hora correctamente");
-                return;
-            }
-            boolean activa = radioButtonActiva.isSelected();
-            String idioma = txtIdioma.getText();
-
-            if (idioma.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar el idioma ");
-                txtIdioma.requestFocus();
-                return;
-            }
-
-            Proyeccion pr = new Proyeccion(pe, sa, idioma, es3d, subtitulada, inicio, fin, precio, activa);
-
-            pr.setIdProyeccion();
-            pd.modificarProyeccion(pr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "ingrese un numero valido");
-        } catch (Exception o) {
-            JOptionPane.showMessageDialog(null, "ingrese la hora correctamente");
+        if (tableProyecciones.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(rootPane, "Seleccione una proyección de la lista.");
+            return;
         }
+
+        selectorLista = e -> {
+            if (!e.getValueIsAdjusting()) {
+
+                int fila = tableProyecciones.getSelectedRow();
+                if (fila < 0) {
+                    return;
+                }
+
+                int idProy = (int) tableProyecciones.getValueAt(fila, 0);
+                Pelicula peli = (Pelicula) tableProyecciones.getValueAt(fila, 1);
+                Sala sala = (Sala) tableProyecciones.getValueAt(fila, 2);
+                String idioma = (String) tableProyecciones.getValueAt(fila, 3);
+                boolean es3D = (Boolean) tableProyecciones.getValueAt(fila, 4);
+                boolean subtitulada = (Boolean) tableProyecciones.getValueAt(fila, 5);
+                LocalTime horaInicio = (LocalTime) tableProyecciones.getValueAt(fila, 6);
+                LocalTime horaFin = (LocalTime) tableProyecciones.getValueAt(fila, 7);
+                double precio = (Double) tableProyecciones.getValueAt(fila, 8);
+                boolean activa = (Boolean) tableProyecciones.getValueAt(fila, 9);
+
+                for (int i = 0; i < comboBoxPelicula.getItemCount(); i++) {
+                    Pelicula item = comboBoxPelicula.getItemAt(i);
+                    if (item.getIdPelicula() == peli.getIdPelicula()) {
+                        comboBoxPelicula.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < comboBoxSala.getItemCount(); i++) {
+                    Sala item = comboBoxSala.getItemAt(i);
+                    if (item.getIdSala() == sala.getIdSala()) {
+                        comboBoxSala.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                txtIdioma.setText(idioma);
+                txtPrecio.setText(String.valueOf(precio));
+                txtHoraInicio.setText(String.valueOf(horaInicio));
+                txtHoraFin.setText(String.valueOf(horaFin));
+
+                radioButton3D.setSelected(es3D);
+                radioButtonSub.setSelected(subtitulada);
+                radioButtonActiva.setSelected(activa);
+
+                System.out.println("Cargando datos de proyección ID: " + idProy);
+            }
+        };
+
+        tableProyecciones.getSelectionModel().addListSelectionListener(selectorLista);
+
+        buttonGuardar.setEnabled(false);
+        buttonGuardarCambios.setEnabled(true);
 
 
     }//GEN-LAST:event_buttonModificarActionPerformed
@@ -489,7 +563,25 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtHoraInicioActionPerformed
 
     private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
-        // TODO add your handling code here:
+
+        if (tableProyecciones.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(rootPane, "Seleccione una proyeccion de la lista.");
+            return;
+        }
+
+        int id = (int) tableProyecciones.getValueAt(tableProyecciones.getSelectedRow(), 0);
+
+        Object[] opciones = {"Si", "No"};
+
+        int resultado = JOptionPane.showOptionDialog(rootPane, "¿Seguro que desea eliminar la proyeccion?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+        ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+        if (resultado == 0) {
+            proyeccionDAO.eliminarProyeccion(id);
+        }
+
+        llenarTableProyeccion();
+    
+
     }//GEN-LAST:event_buttonEliminarActionPerformed
 
 
