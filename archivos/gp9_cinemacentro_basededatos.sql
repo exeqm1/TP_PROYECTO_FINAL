@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 15-11-2025 a las 04:52:04
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Host: localhost:3306
+-- Generation Time: Nov 19, 2025 at 04:21 AM
+-- Server version: 8.4.3
+-- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,137 +18,178 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `gp9_cinemacentro_basededatos`
+-- Database: `gp9_cinemacentro_basededatos`
 --
-CREATE DATABASE IF NOT EXISTS `gp9_cinemacentro_basededatos` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `gp9_cinemacentro_basededatos`;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `comprador`
+-- Table structure for table `comprador`
 --
 
-DROP TABLE IF EXISTS `comprador`;
 CREATE TABLE `comprador` (
-  `Id_Comprador` int(11) NOT NULL,
-  `DNI` int(11) NOT NULL,
-  `nombre` varchar(30) NOT NULL,
-  `password` varchar(30) NOT NULL,
-  `medioPago` varchar(30) NOT NULL,
+  `Id_Comprador` int NOT NULL,
+  `DNI` int NOT NULL,
+  `nombre` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `medioPago` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
   `fechaNac` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `comprador`
+--
+
+INSERT INTO `comprador` (`Id_Comprador`, `DNI`, `nombre`, `password`, `medioPago`, `fechaNac`) VALUES
+(14, 26246, 'test', '246246', 'Efectivo', '2025-11-04'),
+(15, 66866868, 'etuetu', '244', 'Transferencia', '2025-11-17');
+
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `lugar`
+-- Table structure for table `lugar`
 --
 
-DROP TABLE IF EXISTS `lugar`;
 CREATE TABLE `lugar` (
-  `Id_lugar` int(11) NOT NULL,
-  `Id_proyeccion` int(11) NOT NULL,
-  `fila` int(11) NOT NULL,
-  `numero` int(11) NOT NULL,
-  `disponible` tinyint(11) NOT NULL
+  `Id_lugar` int NOT NULL,
+  `Id_proyeccion` int NOT NULL,
+  `fila` int NOT NULL,
+  `numero` int NOT NULL,
+  `disponible` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `lugar`
+--
+
+INSERT INTO `lugar` (`Id_lugar`, `Id_proyeccion`, `fila`, `numero`, `disponible`) VALUES
+(1, 17, 5, 6, 1),
+(2, 16, 6, 6, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `pelicula`
+-- Table structure for table `pelicula`
 --
 
-DROP TABLE IF EXISTS `pelicula`;
 CREATE TABLE `pelicula` (
-  `id_Pelicula` int(11) NOT NULL,
-  `titulo` varchar(30) NOT NULL,
-  `director` varchar(30) NOT NULL,
-  `actores` varchar(30) NOT NULL,
-  `origen` varchar(30) NOT NULL,
-  `genero` varchar(30) NOT NULL,
+  `id_Pelicula` int NOT NULL,
+  `titulo` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `director` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `actores` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `origen` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `genero` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
   `estreno` date NOT NULL,
-  `enCartelera` int(11) NOT NULL
+  `enCartelera` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pelicula`
+--
+
+INSERT INTO `pelicula` (`id_Pelicula`, `titulo`, `director`, `actores`, `origen`, `genero`, `estreno`, `enCartelera`) VALUES
+(14, 'test', 'test', 'test', 'test', 'test', '2025-11-02', 1),
+(15, 'teuetu', 'etuet', 'etue', 'tue', 'riyri', '2025-11-07', 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `proyeccion`
+-- Table structure for table `proyeccion`
 --
 
-DROP TABLE IF EXISTS `proyeccion`;
 CREATE TABLE `proyeccion` (
-  `Id_proyeccion` int(11) NOT NULL,
-  `Id_pelicula` int(11) NOT NULL,
-  `Id_sala` int(11) NOT NULL,
-  `idioma` varchar(30) NOT NULL,
-  `es3D` int(11) NOT NULL,
-  `subtitulada` int(11) NOT NULL,
+  `Id_proyeccion` int NOT NULL,
+  `Id_pelicula` int NOT NULL,
+  `Id_sala` int NOT NULL,
+  `idioma` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `es3D` int NOT NULL,
+  `subtitulada` int NOT NULL,
   `horaInicio` time NOT NULL,
   `horaFin` time NOT NULL,
   `precio` double NOT NULL,
-  `activa` tinyint(4) NOT NULL
+  `activa` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `proyeccion`
+--
+
+INSERT INTO `proyeccion` (`Id_proyeccion`, `Id_pelicula`, `Id_sala`, `idioma`, `es3D`, `subtitulada`, `horaInicio`, `horaFin`, `precio`, `activa`) VALUES
+(16, 14, 17, 'ddye', 1, 1, '01:00:00', '02:00:00', 456, 1),
+(17, 15, 18, 'yrir', 1, 1, '01:01:00', '02:02:00', 4846, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `sala`
+-- Table structure for table `sala`
 --
 
-DROP TABLE IF EXISTS `sala`;
 CREATE TABLE `sala` (
-  `Id_sala` int(11) NOT NULL,
-  `nroSala` int(11) NOT NULL,
-  `apta3D` int(11) NOT NULL,
-  `capacidad` int(11) NOT NULL,
-  `estado` tinyint(30) NOT NULL
+  `Id_sala` int NOT NULL,
+  `nroSala` int NOT NULL,
+  `apta3D` int NOT NULL,
+  `capacidad` int NOT NULL,
+  `estado` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sala`
+--
+
+INSERT INTO `sala` (`Id_sala`, `nroSala`, `apta3D`, `capacidad`, `estado`) VALUES
+(17, 12, 1, 50, 1),
+(18, 4, 1, 57, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `ticket`
+-- Table structure for table `ticket`
 --
 
-DROP TABLE IF EXISTS `ticket`;
 CREATE TABLE `ticket` (
-  `Id_ticket` int(11) NOT NULL,
-  `Id_comprador` int(11) NOT NULL,
-  `Id_lugar` int(11) NOT NULL,
+  `Id_ticket` int NOT NULL,
+  `Id_comprador` int NOT NULL,
+  `Id_lugar` int NOT NULL,
   `fechaCompra` date NOT NULL,
   `fechaFuncion` date NOT NULL,
   `monto` double NOT NULL,
-  `activo` tinyint(4) NOT NULL
+  `activo` tinyint NOT NULL,
+  `id_proyeccion` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Índices para tablas volcadas
+-- Dumping data for table `ticket`
+--
+
+INSERT INTO `ticket` (`Id_ticket`, `Id_comprador`, `Id_lugar`, `fechaCompra`, `fechaFuncion`, `monto`, `activo`, `id_proyeccion`) VALUES
+(5, 14, 2, '2025-11-21', '2025-11-06', 0, 1, 16),
+(6, 15, 2, '2025-11-21', '2025-11-06', 0, 1, 16);
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `comprador`
+-- Indexes for table `comprador`
 --
 ALTER TABLE `comprador`
   ADD PRIMARY KEY (`Id_Comprador`);
 
 --
--- Indices de la tabla `lugar`
+-- Indexes for table `lugar`
 --
 ALTER TABLE `lugar`
   ADD PRIMARY KEY (`Id_lugar`),
   ADD KEY `Id_proyeccion` (`Id_proyeccion`);
 
 --
--- Indices de la tabla `pelicula`
+-- Indexes for table `pelicula`
 --
 ALTER TABLE `pelicula`
   ADD PRIMARY KEY (`id_Pelicula`);
 
 --
--- Indices de la tabla `proyeccion`
+-- Indexes for table `proyeccion`
 --
 ALTER TABLE `proyeccion`
   ADD PRIMARY KEY (`Id_proyeccion`),
@@ -156,13 +197,13 @@ ALTER TABLE `proyeccion`
   ADD KEY `Id_sala` (`Id_sala`);
 
 --
--- Indices de la tabla `sala`
+-- Indexes for table `sala`
 --
 ALTER TABLE `sala`
   ADD PRIMARY KEY (`Id_sala`);
 
 --
--- Indices de la tabla `ticket`
+-- Indexes for table `ticket`
 --
 ALTER TABLE `ticket`
   ADD PRIMARY KEY (`Id_ticket`),
@@ -170,64 +211,64 @@ ALTER TABLE `ticket`
   ADD KEY `Id_lugar` (`Id_lugar`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `comprador`
+-- AUTO_INCREMENT for table `comprador`
 --
 ALTER TABLE `comprador`
-  MODIFY `Id_Comprador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `Id_Comprador` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT de la tabla `lugar`
+-- AUTO_INCREMENT for table `lugar`
 --
 ALTER TABLE `lugar`
-  MODIFY `Id_lugar` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_lugar` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `pelicula`
+-- AUTO_INCREMENT for table `pelicula`
 --
 ALTER TABLE `pelicula`
-  MODIFY `id_Pelicula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_Pelicula` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT de la tabla `proyeccion`
+-- AUTO_INCREMENT for table `proyeccion`
 --
 ALTER TABLE `proyeccion`
-  MODIFY `Id_proyeccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `Id_proyeccion` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT de la tabla `sala`
+-- AUTO_INCREMENT for table `sala`
 --
 ALTER TABLE `sala`
-  MODIFY `Id_sala` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `Id_sala` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT de la tabla `ticket`
+-- AUTO_INCREMENT for table `ticket`
 --
 ALTER TABLE `ticket`
-  MODIFY `Id_ticket` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_ticket` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- Restricciones para tablas volcadas
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `lugar`
+-- Constraints for table `lugar`
 --
 ALTER TABLE `lugar`
   ADD CONSTRAINT `lugar_ibfk_1` FOREIGN KEY (`Id_proyeccion`) REFERENCES `proyeccion` (`Id_proyeccion`);
 
 --
--- Filtros para la tabla `proyeccion`
+-- Constraints for table `proyeccion`
 --
 ALTER TABLE `proyeccion`
   ADD CONSTRAINT `proyeccion_ibfk_1` FOREIGN KEY (`Id_pelicula`) REFERENCES `pelicula` (`id_Pelicula`),
   ADD CONSTRAINT `proyeccion_ibfk_2` FOREIGN KEY (`Id_sala`) REFERENCES `sala` (`Id_sala`);
 
 --
--- Filtros para la tabla `ticket`
+-- Constraints for table `ticket`
 --
 ALTER TABLE `ticket`
   ADD CONSTRAINT `ticket_ibfk_1` FOREIGN KEY (`Id_comprador`) REFERENCES `comprador` (`Id_Comprador`),

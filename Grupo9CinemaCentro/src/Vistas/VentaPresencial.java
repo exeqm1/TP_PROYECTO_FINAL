@@ -635,7 +635,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         comboBoxPeliculas.setSelectedIndex(-1);
         comboBoxProyeccion.setSelectedIndex(-1);
         comboBoxButaca.setSelectedIndex(-1);
-        txtMonto.setText("");
         buttonGroup1.clearSelection();
         dateChooserEmision.setDate(null);
         dateChooserFuncion.setDate(null);
@@ -649,7 +648,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
             return;
         }
 
-        if (comboBoxPeliculas.getSelectedItem() == null || comboBoxProyeccion.getSelectedItem() == null || comboBoxButaca.getSelectedItem() == null || txtMonto.getText().isEmpty() || buttonGroup1.getSelection() == null) {
+        if (comboBoxPeliculas.getSelectedItem() == null || comboBoxProyeccion.getSelectedItem() == null || comboBoxButaca.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(null, "Complete todos los campos para continuar.");
             return;
         }
@@ -668,12 +667,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         boolean estado = true;
         Proyeccion funcion = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 
-        try {
-            monto = Double.valueOf(txtMonto.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Formato invalido para campo numerico. ");
-            return;
-        }
 
         TicketData ticketDAO = new TicketData(conex);
         Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);

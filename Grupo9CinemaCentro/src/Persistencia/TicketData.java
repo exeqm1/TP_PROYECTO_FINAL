@@ -34,18 +34,18 @@ public class TicketData {
 
     // Metodos CRUD
     public void guardarTicket(Ticket ticket) {
-        String sql = "INSERT INTO ticket (Id_comprador, Id_lugar, fechaCompra, fechaFuncion, monto, activo) VALUES (?, ?, ?, ?, ?,?)";
+        String sql = "INSERT INTO ticket (Id_comprador, Id_lugar, id_proyeccion, fechaCompra, fechaFuncion, monto, activo) VALUES (?, ?, ?, ?, ?, ?,?)";
 
         try (PreparedStatement ps = conec.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, ticket.getComprador().getIdComprador());
             ps.setInt(2, ticket.getAsiento().getIdLugar());
+            ps.setInt(3, ticket.getFuncion().getIdProyeccion());
+            ps.setDate(4, Date.valueOf(ticket.getFechaCompra()));
+            ps.setDate(5, Date.valueOf(ticket.getFechaFuncion()));
 
-            ps.setDate(3, Date.valueOf(ticket.getFechaCompra()));
-            ps.setDate(4, Date.valueOf(ticket.getFechaFuncion()));
-
-            ps.setDouble(5, ticket.getMonto());
-            ps.setBoolean(6, ticket.isActivo());
+            ps.setDouble(6, ticket.getMonto());
+            ps.setBoolean(7, ticket.isActivo());
 
             int filasAfectadas = ps.executeUpdate();
 
@@ -56,7 +56,7 @@ public class TicketData {
             }
 
             if (filasAfectadas > 0) {
-                
+
                 JOptionPane.showMessageDialog(null, "Ticket Nº " + ticket.getIdTicket() + " generado con éxito.");
             } else {
                 JOptionPane.showMessageDialog(null, "No se pudo generar el ticket.");
@@ -170,10 +170,10 @@ public class TicketData {
                     ticket.setFechaCompra(rs.getDate("fechaCompra").toLocalDate());
                     ticket.setMonto(rs.getDouble("monto"));
                     int Id_lugar = rs.getInt("Id_lugar");
-                    
+
                     Lugar asiento = lugarData.buscarButaca(Id_lugar);
                     ticket.setAsiento(asiento);
-                    
+
                     Comprador comprador = compradorData.buscarComprador(Id_comprador);
                     ticket.setComprador(comprador);
 
@@ -187,59 +187,40 @@ public class TicketData {
     }
 
     public List<Ticket> listarTickets() {
-    List<Ticket> lista = new ArrayList<>();
-    String sql = "SELECT * FROM ticket";
+        List<Ticket> lista = new ArrayList<>();
+        String sql = "SELECT * FROM ticket";
 
-    try (PreparedStatement ps = conec.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conec.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            Ticket ticket = new Ticket();
+            while (rs.next()) {
+                Ticket ticket = new Ticket();
 
-            ticket.setIdTicket(rs.getInt("Id_ticket"));
+                ticket.setIdTicket(rs.getInt("Id_ticket"));
+                ticket.setFechaCompra(rs.getDate("fechaCompra").toLocalDate());
+                ticket.setFechaFuncion(rs.getDate("fechaFuncion").toLocalDate());
+                ticket.setMonto(rs.getDouble("monto"));
+                ticket.setActivo(rs.getBoolean("activo"));
 
-            int Id_comprador = rs.getInt("Id_comprador");
-            int Id_lugar = rs.getInt("Id_lugar");
+                int Id_comprador = rs.getInt("Id_comprador");
+                Comprador comprador = compradorData.buscarComprador(Id_comprador);
+                ticket.setComprador(comprador);
 
-            // --- Manejo seguro de fechas ---
-            Date fCompra = rs.getDate("fechaCompra");
-            if (fCompra != null) {
-                ticket.setFechaCompra(fCompra.toLocalDate());
+                int Id_lugar = rs.getInt("Id_lugar");
+                Lugar asiento = lugarData.buscarButaca(Id_lugar);
+                ticket.setAsiento(asiento);
+
+                int id_proyeccion = rs.getInt("Id_proyeccion");
+                Proyeccion pro = proyecciondata.buscarProyeccion(id_proyeccion);
+                ticket.setFuncion(pro);
+
+                lista.add(ticket);
+
             }
 
-            Date fFuncion = rs.getDate("fechaFuncion");
-            if (fFuncion != null) {
-                ticket.setFechaFuncion(fFuncion.toLocalDate());
-            }
-
-            ticket.setMonto(rs.getDouble("monto"));
-            ticket.setActivo(rs.getBoolean("activo"));
-
-            // --- Buscar comprador ---
-            Comprador comprador = compradorData.buscarComprador(Id_comprador);
-            if (comprador == null) {
-                System.out.println("⚠ Comprador no encontrado: " + Id_comprador);
-            }
-            ticket.setComprador(comprador);
-
-            // --- Buscar asiento ---
-            Lugar asiento = lugarData.buscarButaca(Id_lugar);
-            if (asiento == null) {
-                System.out.println("⚠ Asiento no encontrado: " + Id_lugar);
-            }
-            ticket.setAsiento(asiento);
-
-            lista.add(ticket);
+        } catch (SQLException ex) {
+            Logger.getLogger(TicketData.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    } catch (SQLException ex) {
-        Logger.getLogger(TicketData.class.getName()).log(Level.SEVERE, null, ex);
+        return lista;
     }
-
-    return lista;
-}
-
-               
-            
 
 }

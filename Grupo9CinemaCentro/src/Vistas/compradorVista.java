@@ -326,7 +326,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
 
     private void buttonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarActionPerformed
         if (txtDNI.getText().isEmpty() || txtPassword.getText().isEmpty() || txtNombre.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "   Todos los campos son obligatorios.");
+            JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
             return;
         }
 
@@ -337,6 +337,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
 
         if (comboBoxPago.getSelectedItem() == null) {
             JOptionPane.showMessageDialog(rootPane, "Seleccione un metodo de pago.");
+            return;
         }
 
         int dni = 0;
@@ -349,6 +350,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
             dni = Integer.parseInt(txtDNI.getText());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Ingrese un formato valido para campo numerico.");
+            return;
         }
 
         Comprador comprador = new Comprador(dni, nombre, contra, medioPago, fecha);
@@ -396,7 +398,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
         if (tableCompradores.getSelectedRow() >= 0) {
 
             if (txtDNI.getText().isEmpty() || txtPassword.getText().isEmpty() || txtNombre.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "   Todos los campos son obligatorios.");
+                JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios.");
                 return;
             }
 
@@ -416,6 +418,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
                 dni = Integer.parseInt(txtDNI.getText());
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Ingrese formato valido para campo numerico");
+                return;
             }
 
             Comprador comprador = new Comprador(id, dni, nombre, contra, medioPago, fecha);
