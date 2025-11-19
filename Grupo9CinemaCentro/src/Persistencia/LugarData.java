@@ -24,11 +24,11 @@ import javax.swing.JOptionPane;
 public class LugarData {
 
     private Connection conex = null;
-    private ProyeccionData proyecciondata;
+    private ProyeccionData proyeccionDAO;
 
     public LugarData(Conexion conex) {
         this.conex = conex.conectar();
-        this.proyecciondata = new ProyeccionData(conex);
+        this.proyeccionDAO = new ProyeccionData(conex);
     }
 
     // Metodos CRUD
@@ -72,7 +72,7 @@ public class LugarData {
                 if (rsBuscar.next()) {
                     asiento = new Lugar();
                     asiento.setIdLugar(rsBuscar.getInt("Id_lugar"));
-                   Proyeccion p=  proyecciondata.buscarProyeccion(rsBuscar.getInt("Id_proyeccion"));
+                   Proyeccion p=  proyeccionDAO.buscarProyeccion(rsBuscar.getInt("Id_proyeccion"));
                     asiento.setFila(rsBuscar.getInt("fila"));
                     asiento.setNumero(rsBuscar.getInt("numero"));
                     asiento.setDisponible(rsBuscar.getBoolean("disponible"));
@@ -149,8 +149,9 @@ public class LugarData {
 
                 while (rs.next()) {
                     Lugar asiento = new Lugar();
-                    Proyeccion proyeccion = new Proyeccion();
-                    proyeccion.setIdProyeccion(rs.getInt("Id_proyeccion"));
+                    int id = rs.getInt("Id_proyeccion");
+                    Proyeccion proyeccion = proyeccionDAO.buscarProyeccion(id);
+                    
                     asiento.setIdLugar(rs.getInt("Id_lugar"));
                     asiento.setProyeccion(proyeccion);
                     asiento.setFila(rs.getInt("fila"));
@@ -227,7 +228,7 @@ public class LugarData {
 
                     int idpro = rs.getInt("Id_proyeccion");
 
-                    Proyeccion pro = proyecciondata.buscarProyeccion(idpro);
+                    Proyeccion pro = proyeccionDAO.buscarProyeccion(idpro);
                     
                     if (pro != null) {
                     l.setProyeccion(pro);

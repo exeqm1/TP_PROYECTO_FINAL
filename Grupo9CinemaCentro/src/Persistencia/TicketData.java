@@ -272,5 +272,46 @@ public class TicketData {
 
         return lista;
     }
+    
+    public List<Object[]> listarVentas(int idPelicula, LocalDate desde, LocalDate hasta) {
 
+    List<Object[]> lista = new ArrayList<>();
+
+    String sql = "SELECT p.id_proyeccion, p.inicio, p.fin, p.tipo, " +
+        "       COUNT(t.Id_ticket) AS entradas, " +
+        "       p.precio, " +
+        "       COUNT(t.Id_ticket) * p.precio AS subtotal " +
+        "FROM proyeccion p " +
+        "LEFT JOIN ticket t ON p.id_proyeccion = t.id_proyeccion AND t.activo = 1 " +
+        "WHERE p.id_pelicula = ? " +
+        "AND p.inicio BETWEEN ? AND ? " +
+        "GROUP BY p.id_proyeccion;";
+
+    try (PreparedStatement ps = conec.prepareStatement(sql)) {
+
+        ps.setInt(1, idPelicula);
+        ps.setDate(2, java.sql.Date.valueOf(desde));
+        ps.setDate(3, java.sql.Date.valueOf(hasta));
+
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Object[] row = new Object[]{
+                    rs.getInt("id_proyeccion"),
+                    rs.getTimestamp("inicio"),
+                    rs.getTimestamp("fin"),
+                    rs.getString("tipo"),
+                    rs.getInt("entradas"),
+                    rs.getDouble("precio"),
+                    rs.getDouble("subtotal")
+                };
+                lista.add(row);
+            }
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error en reporte: " + e.getMessage());
+    }
+
+    return lista;
+}
 }

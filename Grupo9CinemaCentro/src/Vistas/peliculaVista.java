@@ -6,39 +6,102 @@
 package Vistas;
 
 import Modelo.Conexion;
+import Modelo.Lugar;
 import Modelo.Pelicula;
+import Modelo.Proyeccion;
+import Persistencia.LugarData;
 import Persistencia.PeliculaData;
+import Persistencia.ProyeccionData;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author Usuario
  */
 public class peliculaVista extends javax.swing.JInternalFrame {
-private  SistemaCine sc;
-private Conexion con;
-private PeliculaData pd;
 
-    /**
-     * Creates new form peliculaVista
-     */
+    private SistemaCine sistemaCine = new SistemaCine();
+
+    private Conexion conex = sistemaCine.conexionDb();
+
+    DefaultTableModel modeloTablePeliculas;
+    TableRowSorter<DefaultTableModel> sortModelPeliculas;
+    ListSelectionListener selectorLista;
+
+    private void llenarTablePeliculas() {
+
+        DocumentListener listenerFiltro = new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                filtrarPelis();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                filtrarPelis();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                filtrarPelis();
+            }
+        };
+        PeliculaData peliculaDAO = new PeliculaData(conex);
+        List<Pelicula> listaPelis = peliculaDAO.listarPeliculas();
+
+        tablePelis.setShowGrid(false);
+        modeloTablePeliculas = (DefaultTableModel) tablePelis.getModel();
+        modeloTablePeliculas.setRowCount(0);
+
+        for (Pelicula peli : listaPelis) {
+            modeloTablePeliculas.addRow(new Object[]{
+                peli.getIdPelicula(),
+                peli.getTitulo(),
+                peli.getDirector(),
+                peli.getActores(),
+                peli.getOrigen(),
+                peli.getGenero(),
+                peli.getEstreno(),
+                peli.isEnCartelera()
+            });
+        }
+
+        sortModelPeliculas = new TableRowSorter<>(modeloTablePeliculas);
+        tablePelis.setRowSorter(sortModelPeliculas);
+        txtIDPeli.getDocument().addDocumentListener(listenerFiltro);
+    }
+
+    private void filtrarPelis() {
+        String txtButaca = txtIDPeli.getText().trim();
+        if (txtButaca.isEmpty()) {
+            sortModelPeliculas.setRowFilter(null);
+        } else {
+            sortModelPeliculas.setRowFilter(RowFilter.regexFilter(txtButaca, 0));
+        }
+    }
+
+    private void limpiarCampos() {
+        txtID.setText("");
+        txtTitulo.setText("");
+        txtDirector.setText("");
+        txtActores.setText("");
+        txtOrigen.setText("");
+        txtGenero.setText("");
+        dateChooserEstreno.setDate(null);
+        radioButtonCartelera.removeAll();         
+    }
+
     public peliculaVista(SistemaCine sc) {
         initComponents();
-        
-        this.sc=sc;
-        this.con=sc.conexionDb();
-        this.pd=new PeliculaData(con);
-        
-        
-        
-        
-        
-        
-txtid.setEditable(false);
-     // txtid.setEditable(false);
+
+        // txtid.setEditable(false);
     }
 
     /**
@@ -51,348 +114,283 @@ txtid.setEditable(false);
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        buttonModificar = new javax.swing.JButton();
+        buttonGuardar = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        txtOrigen = new javax.swing.JTextField();
+        txtActores = new javax.swing.JTextField();
+        txtGenero = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        dateChooserEstreno = new com.toedter.calendar.JDateChooser();
+        radioButtonCartelera = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        txtid = new java.awt.TextField();
-        txttitulo = new java.awt.TextField();
-        txtdirector = new java.awt.TextField();
-        txtorigen = new java.awt.TextField();
-        txtgenero = new java.awt.TextField();
-        txtactores = new java.awt.TextField();
-        txtfecha = new com.toedter.calendar.JDateChooser();
-        txtencartelera = new javax.swing.JCheckBox();
-        jbdarbaja = new javax.swing.JButton();
-        jbmodificar = new javax.swing.JButton();
-        jbguardar = new javax.swing.JButton();
-        jbnuevo = new javax.swing.JButton();
-        jbbuscar = new javax.swing.JButton();
-        jbsalir = new javax.swing.JButton();
+        txtTitulo = new javax.swing.JTextField();
+        txtDirector = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablePelis = new javax.swing.JTable();
+        buttonGuardarCambios = new javax.swing.JButton();
+        buttonEliminar = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        txtIDPeli = new javax.swing.JTextField();
 
-        jLabel1.setFont(new java.awt.Font("Trebuchet MS", 3, 14)); // NOI18N
-        jLabel1.setText("Pelicula");
+        setPreferredSize(new java.awt.Dimension(800, 600));
 
-        jLabel2.setText("ID:");
+        jLabel1.setText("Gestor de Peliculas");
 
-        jLabel3.setText("Tiulo:");
-
-        jLabel4.setText("Director");
-
-        jLabel5.setText("Actores");
-
-        jLabel6.setText("Origen");
-
-        jLabel7.setText("Genero");
-
-        jLabel8.setText("Fecha de estreno");
-
-        jLabel9.setText("en cartelera");
-
-        txtid.addActionListener(new java.awt.event.ActionListener() {
+        buttonModificar.setText("Modificar");
+        buttonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtidActionPerformed(evt);
+                buttonModificarActionPerformed(evt);
             }
         });
 
-        txttitulo.addActionListener(new java.awt.event.ActionListener() {
+        buttonGuardar.setText("Guardar");
+        buttonGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txttituloActionPerformed(evt);
+                buttonGuardarActionPerformed(evt);
             }
         });
 
-        txtdirector.addActionListener(new java.awt.event.ActionListener() {
+        jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        jLabel9.setText("En Cartelera:");
+
+        jLabel3.setText("Titulo:");
+
+        jLabel4.setText("Director:");
+
+        jLabel8.setText("Fecha de Estreno:");
+
+        jLabel5.setText("Actores:");
+
+        jLabel6.setText("Origen:");
+
+        jLabel7.setText("Genero:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(57, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtActores, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtDirector, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtTitulo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(47, 47, 47)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtGenero, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtOrigen, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dateChooserEstreno, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
+                    .addComponent(radioButtonCartelera))
+                .addGap(48, 48, 48))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtOrigen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(txtGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(dateChooserEstreno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtDirector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(txtActores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel9)
+                    .addComponent(radioButtonCartelera))
+                .addContainerGap(31, Short.MAX_VALUE))
+        );
+
+        jLabel10.setText("Crear Pelicula");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel10)
+                .addGap(266, 266, 266))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tablePelis.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Titulo", "Director", "Actores", "Origen", "Genero", "Fecha de Estreno", "En Cartelera"
+            }
+        ));
+        jScrollPane1.setViewportView(tablePelis);
+
+        buttonGuardarCambios.setText("Guardar Cambios");
+        buttonGuardarCambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtdirectorActionPerformed(evt);
+                buttonGuardarCambiosActionPerformed(evt);
             }
         });
 
-        jbdarbaja.setText("darbaja");
-        jbdarbaja.addActionListener(new java.awt.event.ActionListener() {
+        buttonEliminar.setText("Eliminar");
+        buttonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbdarbajaActionPerformed(evt);
+                buttonEliminarActionPerformed(evt);
             }
         });
 
-        jbmodificar.setText("Modificar");
-        jbmodificar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbmodificarActionPerformed(evt);
-            }
-        });
-
-        jbguardar.setText("Guardar");
-        jbguardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbguardarActionPerformed(evt);
-            }
-        });
-
-        jbnuevo.setText("Nuevo");
-        jbnuevo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbnuevoActionPerformed(evt);
-            }
-        });
-
-        jbbuscar.setText("Buscar");
-        jbbuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbbuscarActionPerformed(evt);
-            }
-        });
-
-        jbsalir.setText("salir");
-        jbsalir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbsalirActionPerformed(evt);
-            }
-        });
+        jLabel11.setText("Buscar Pelicula por ID:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtactores, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jbbuscar))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(10, 10, 10)
-                                        .addComponent(txtorigen, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtgenero, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(328, 328, 328)
+                        .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtdirector, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel3)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txttitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel2)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtfecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(buttonGuardar)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtencartelera)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(33, 33, 33))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(104, 104, 104)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jbnuevo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbguardar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbmodificar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbdarbaja)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jbsalir)
-                .addContainerGap(42, Short.MAX_VALUE))
+                                .addComponent(txtIDPeli, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonEliminar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buttonGuardarCambios)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(buttonModificar))
+                            .addComponent(jScrollPane1))))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonGuardar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(txttitulo, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(txtdirector, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
-                        .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5)
-                            .addComponent(txtactores, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtorigen, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(16, 16, 16))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jbbuscar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtgenero, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(txtfecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtencartelera)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jbmodificar)
-                            .addComponent(jbguardar)
-                            .addComponent(jbnuevo)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jbdarbaja)
-                            .addComponent(jbsalir))
-                        .addGap(0, 1, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonModificar)
+                    .addComponent(buttonGuardarCambios)
+                    .addComponent(buttonEliminar)
+                    .addComponent(jLabel11)
+                    .addComponent(txtIDPeli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtidActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtidActionPerformed
-
-    private void txttituloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txttituloActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txttituloActionPerformed
-
-    private void txtdirectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdirectorActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtdirectorActionPerformed
-
-    private void jbguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbguardarActionPerformed
-      if(txtfecha.getDate() == null){
-    JOptionPane.showMessageDialog(null, "Debe elegir una fecha");
-    return;
-}
-       
-        String titulo=txttitulo.getText();
-         String director=txtdirector.getText();
-      String actores=txtactores.getText();
-        String  origen=txtorigen.getText();
-          String genero=txtgenero.getText();
-          LocalDate fecha;
-    fecha = txtfecha.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    boolean encartelera=txtencartelera.isSelected();
-  
-          Pelicula p=new Pelicula(titulo,director,actores,origen,genero,fecha,encartelera);
-        pd.agregarPelicula(p);
-        limpiar();
-    }//GEN-LAST:event_jbguardarActionPerformed
-
-    private void jbmodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbmodificarActionPerformed
-      Pelicula pe=new Pelicula();
-      try{
-      int id=Integer.parseInt(txtid.getText());
-      
-       String titulo=txttitulo.getText();
-         String director=txtdirector.getText();
-      String actores=txtactores.getText();
-        String  origen=txtorigen.getText();
-          String genero=txtgenero.getText();
-          LocalDate  fecha = txtfecha.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    boolean encartelera=txtencartelera.isSelected();
-    
-           pe=new Pelicula(titulo,director,actores,origen,genero,fecha,encartelera);
-           pe.setIdPelicula(Integer.parseInt(txtid.getText()));
-           pd.actualizarPelicula(pe);
-      limpiar();
-          txtid.setText("");
-          }catch(Exception e){
-      JOptionPane.showMessageDialog(null, "ingrese el id");
-      }
-          
-    }//GEN-LAST:event_jbmodificarActionPerformed
-
-    private void jbdarbajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbdarbajaActionPerformed
-       txtid.setEditable(true);
-       try{
-        int id= Integer.parseInt(txtid.getText());
-      
-        pd.bajaPelicula(id);
-        txtid.setText("");
-         txtid.setEditable(false);
-        limpiar();
-         }catch(Exception e){
-       JOptionPane.showMessageDialog(null, "ingrese el id");
-       }
-    }//GEN-LAST:event_jbdarbajaActionPerformed
-
-    private void jbbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbbuscarActionPerformed
-        txtid.setEditable(true);
-        try{
-       Pelicula pe= pd.buscarPelicula(Integer.parseInt(txtid.getText()));
-       
-        
-        txtid.setText(pe.getIdPelicula()+"");
-        txttitulo.setText(pe.getTitulo());
-        txtdirector.setText(pe.getDirector());
-        txtactores.setText(pe.getActores());
-        txtorigen.setText(pe.getOrigen());
-        txtgenero.setText(pe.getGenero());
-        LocalDate ld= pe.getEstreno();
-        
-              java.util.Date date = java.util.Date.from(ld.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        txtfecha.setDate(date);
-        txtencartelera.setSelected(pe.isEnCartelera());
-            }catch(Exception e){
-        
-        JOptionPane.showMessageDialog(null, "ingrese el id");
+    private void buttonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarActionPerformed
+         if (txtFila.getText().trim().isEmpty() || txtNumero.getText().trim().isEmpty() || comboBoxProyeccion.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Debe completar todos los campos.");
+            return;
         }
 
-             
-        
-    }//GEN-LAST:event_jbbuscarActionPerformed
+        Proyeccion pro = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 
-    private void jbnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbnuevoActionPerformed
-         limpiar();
-         txtid.setText("");
-    txtid.setEditable(false);
-    }//GEN-LAST:event_jbnuevoActionPerformed
+        try {
+            int fila = Integer.parseInt(txtFila.getText());
+            int nro = Integer.parseInt(txtNumero.getText());
+            boolean estado = radioButtonDisponible.isSelected();
+            Lugar lugar = new Lugar(pro, fila, nro, estado);
+            lugarDAO.insertButaca(lugar);
+            limpiarCampos();
+            // txtID.setEditable(false);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Fila y número deben ser valores numéricos");
+            return;
+        }
+    }//GEN-LAST:event_buttonGuardarActionPerformed
 
-    private void jbsalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbsalirActionPerformed
-dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_jbsalirActionPerformed
+    private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
+
+
+    }//GEN-LAST:event_buttonModificarActionPerformed
+
+    private void buttonGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarCambiosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonGuardarCambiosActionPerformed
+
+    private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEliminar;
+    private javax.swing.JButton buttonGuardar;
+    private javax.swing.JButton buttonGuardarCambios;
+    private javax.swing.JButton buttonModificar;
+    private com.toedter.calendar.JDateChooser dateChooserEstreno;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -400,31 +398,17 @@ dispose();        // TODO add your handling code here:
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JButton jbbuscar;
-    private javax.swing.JButton jbdarbaja;
-    private javax.swing.JButton jbguardar;
-    private javax.swing.JButton jbmodificar;
-    private javax.swing.JButton jbnuevo;
-    private javax.swing.JButton jbsalir;
-    private java.awt.TextField txtactores;
-    private java.awt.TextField txtdirector;
-    private javax.swing.JCheckBox txtencartelera;
-    private com.toedter.calendar.JDateChooser txtfecha;
-    private java.awt.TextField txtgenero;
-    private java.awt.TextField txtid;
-    private java.awt.TextField txtorigen;
-    private java.awt.TextField txttitulo;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JCheckBox radioButtonCartelera;
+    private javax.swing.JTable tablePelis;
+    private javax.swing.JTextField txtActores;
+    private javax.swing.JTextField txtDirector;
+    private javax.swing.JTextField txtGenero;
+    private javax.swing.JTextField txtIDPeli;
+    private javax.swing.JTextField txtOrigen;
+    private javax.swing.JTextField txtTitulo;
     // End of variables declaration//GEN-END:variables
- private void limpiar() {
-        
-        
-        txttitulo.setText("");
-        txtdirector.setText("");
-        txtorigen.setText("");
-        txtgenero.setText("");
-        txtfecha.setDate(null);
-        txtencartelera.setSelected(false);
-        txtactores.setText("");
 
-    }
 }

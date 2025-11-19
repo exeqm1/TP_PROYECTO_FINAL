@@ -237,7 +237,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
             txtTotal.setText("0");
             return;
         }
-        
+
         double precio3D = 0;
         String precioFinal;
         if (proyeccionSeleccionada.isEs3D()) {
@@ -245,6 +245,25 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         }
         precioFinal = String.valueOf(precio3D + proyeccionSeleccionada.getPrecio());
         txtTotal.setText(precioFinal);
+    }
+
+    private void listenerSuma() {
+        comboBoxProyeccion.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                sumaTotal();
+            }
+        });
+    }
+
+    private void limpiarCampos() {
+        tableCompradores.clearSelection();
+        txtIDComprador.setText("");
+        comboBoxPeliculas.setSelectedIndex(-1);
+        comboBoxProyeccion.setSelectedIndex(-1);
+        comboBoxButaca.setSelectedIndex(-1);
+        buttonGroup1.clearSelection();
+        dateChooserEmision.setDate(null);
+        dateChooserFuncion.setDate(null);
     }
 
     public VentaPresencial(SistemaCine sc) {
@@ -260,7 +279,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         llenarListPeliculas();
         listenerPeliculas();
         listenerProyeccion();
-        sumaTotal();
+        listenerSuma();
 
         if (comboBoxPeliculas.getItemCount() > 0) {
             Pelicula seleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
@@ -280,7 +299,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         txtIDTicket = new javax.swing.JTextField();
-        botonNuevoTicket = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -319,13 +337,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         txtIDTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtIDTicketActionPerformed(evt);
-            }
-        });
-
-        botonNuevoTicket.setText("Nuevo Ticket");
-        botonNuevoTicket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonNuevoTicketActionPerformed(evt);
             }
         });
 
@@ -422,7 +433,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                                 .addComponent(jLabel14)
                                 .addGap(18, 18, 18)
                                 .addComponent(dateChooserEmision, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -536,7 +547,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Cliente", "Butaca", "Emisión", "Fecha", "Horario", "Pelicula", "Monto", "Estado"
+                "ID", "Cliente", "Butaca", "Emisión", "Fecha", "Horario", "Pelicula", "Precio Final", "Estado"
             }
         ));
         jScrollPane1.setViewportView(tableTicket);
@@ -573,21 +584,18 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                             .addComponent(botonAnularTicket)
                             .addGap(18, 18, 18)
                             .addComponent(botonBorrarTicket))
-                        .addComponent(jScrollPane1)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(1, 1, 1)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(botonGenerarTicket)
-                                    .addGap(134, 134, 134)
-                                    .addComponent(botonNuevoTicket))
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(28, 28, 28)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(74, 74, 74)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(293, 293, 293)
                         .addComponent(jLabel7)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -597,12 +605,12 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(botonNuevoTicket)
-                            .addComponent(botonGenerarTicket))
-                        .addGap(30, 30, 30))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonGenerarTicket))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -644,20 +652,9 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         if (resultado == 0) {
             ticketDAO.anularTicket(id);
         }
+
+        llenarTableTicket();
     }//GEN-LAST:event_botonAnularTicketActionPerformed
-
-    private void botonNuevoTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNuevoTicketActionPerformed
-        tableCompradores.clearSelection();
-        txtIDComprador.setText("");
-        comboBoxPeliculas.setSelectedIndex(-1);
-        comboBoxProyeccion.setSelectedIndex(-1);
-        comboBoxButaca.setSelectedIndex(-1);
-        buttonGroup1.clearSelection();
-        dateChooserEmision.setDate(null);
-        dateChooserFuncion.setDate(null);
-
-
-    }//GEN-LAST:event_botonNuevoTicketActionPerformed
 
     private void botonGenerarTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGenerarTicketActionPerformed
         if (tableCompradores.getSelectedRow() < 0) {
@@ -680,14 +677,18 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         Comprador nombreComprador = (Comprador) tableCompradores.getValueAt(tableCompradores.getSelectedRow(), 0);
         LocalDate fechaEmision = dateChooserEmision.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate fechaFuncion = dateChooserFuncion.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        double monto = 0;
+        double monto = Double.valueOf(txtTotal.getText());
         boolean estado = true;
         Proyeccion funcion = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 
         TicketData ticketDAO = new TicketData(conex);
         Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);
         ticketDAO.guardarTicket(ticket);
+
+        LugarData lugarDAO = new LugarData(conex);
+        lugarDAO.reservarButaca(asiento);
         llenarTableTicket();
+        limpiarCampos();
 
     }//GEN-LAST:event_botonGenerarTicketActionPerformed
 
@@ -704,14 +705,19 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         int id = (int) tableTicket.getValueAt(tableTicket.getSelectedRow(), 0);
 
         TicketData ticketDAO = new TicketData(conex);
+        Lugar asiento = (Lugar) comboBoxButaca.getSelectedItem();
 
         Object[] opciones = {"Si", "No"};
 
-        int resultado = JOptionPane.showOptionDialog(rootPane, "¿Seguro que desea anular el ticket?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+        int resultado = JOptionPane.showOptionDialog(rootPane, "¿Seguro que desea borrar el ticket?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
 
         if (resultado == 0) {
-            ticketDAO.anularTicket(id);
+            ticketDAO.borrarTicket(id);
+            LugarData lugarDAO = new LugarData(conex);
+            lugarDAO.liberarLugar(asiento.getIdLugar());
         }
+
+        llenarTableTicket();
 
     }//GEN-LAST:event_botonBorrarTicketActionPerformed
 
@@ -743,7 +749,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
     private javax.swing.JButton botonAnularTicket;
     private javax.swing.JButton botonBorrarTicket;
     private javax.swing.JButton botonGenerarTicket;
-    private javax.swing.JButton botonNuevoTicket;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<Lugar> comboBoxButaca;
     private javax.swing.JComboBox<Pelicula> comboBoxPeliculas;
