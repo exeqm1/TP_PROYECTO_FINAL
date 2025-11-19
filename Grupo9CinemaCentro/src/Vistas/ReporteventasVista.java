@@ -19,16 +19,15 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ReporteventasVista extends javax.swing.JInternalFrame {
 
-    private SistemaCine sc ;
-    private Conexion con ;
+    private SistemaCine sistemaCine = new SistemaCine();
+    private Conexion con = sistemaCine.conexionDb();
     private DefaultTableModel modelo;
     private PeliculaData peliculaData;
     private TicketData ticketData;
     
     public ReporteventasVista() {
         initComponents();
-        this.sc=sc;
-        this.con=sc.conexionDb();
+        
         peliculaData = new PeliculaData(con);
         ticketData = new TicketData(con);
 

@@ -61,10 +61,12 @@ public class SistemaCine extends javax.swing.JFrame {
         menucomprador = new javax.swing.JMenuItem();
         menuproyeccion = new javax.swing.JMenuItem();
         Lugar = new javax.swing.JMenuItem();
-        jmenuticket = new javax.swing.JMenuItem();
         menupelicula = new javax.swing.JMenuItem();
         jventa = new javax.swing.JMenu();
+        jmenuticket = new javax.swing.JMenuItem();
         menuonline = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
 
         jMenu3.setText("File");
         jMenuBar2.add(jMenu3);
@@ -114,14 +116,14 @@ public class SistemaCine extends javax.swing.JFrame {
 
         getContentPane().add(escritorio1, java.awt.BorderLayout.CENTER);
 
-        menuticket.setText("gestor");
+        menuticket.setText("Gestor");
         menuticket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuticketActionPerformed(evt);
             }
         });
 
-        menusala.setText("salas");
+        menusala.setText("Salas");
         menusala.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menusalaActionPerformed(evt);
@@ -129,7 +131,7 @@ public class SistemaCine extends javax.swing.JFrame {
         });
         menuticket.add(menusala);
 
-        menucomprador.setText("compradores");
+        menucomprador.setText("Compradores");
         menucomprador.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menucompradorActionPerformed(evt);
@@ -137,7 +139,7 @@ public class SistemaCine extends javax.swing.JFrame {
         });
         menuticket.add(menucomprador);
 
-        menuproyeccion.setText("proyeccion");
+        menuproyeccion.setText("Proyeccion");
         menuproyeccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuproyeccionActionPerformed(evt);
@@ -153,14 +155,6 @@ public class SistemaCine extends javax.swing.JFrame {
         });
         menuticket.add(Lugar);
 
-        jmenuticket.setText("ticket");
-        jmenuticket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmenuticketActionPerformed(evt);
-            }
-        });
-        menuticket.add(jmenuticket);
-
         menupelicula.setText("Peliculas");
         menupelicula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,7 +165,15 @@ public class SistemaCine extends javax.swing.JFrame {
 
         jMenuBar1.add(menuticket);
 
-        jventa.setText("venta");
+        jventa.setText("Venta");
+
+        jmenuticket.setText("Venta Presencial");
+        jmenuticket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmenuticketActionPerformed(evt);
+            }
+        });
+        jventa.add(jmenuticket);
 
         menuonline.setText("Venta Online");
         menuonline.addActionListener(new java.awt.event.ActionListener() {
@@ -182,6 +184,19 @@ public class SistemaCine extends javax.swing.JFrame {
         jventa.add(menuonline);
 
         jMenuBar1.add(jventa);
+
+        jMenu5.setText("Consultas");
+
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("Consultas");
+        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jCheckBoxMenuItem1);
+
+        jMenuBar1.add(jMenu5);
 
         setJMenuBar(jMenuBar1);
 
@@ -200,7 +215,7 @@ public class SistemaCine extends javax.swing.JFrame {
 
         GUI.setBorder(null);
         ((BasicInternalFrameUI) GUI.getUI()).setNorthPane(null);
-    
+
     }//GEN-LAST:event_menupeliculaActionPerformed
 
     private void menuproyeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuproyeccionActionPerformed
@@ -268,16 +283,30 @@ public class SistemaCine extends javax.swing.JFrame {
         gui.setVisible(true);
         escritorio1.add(gui);
         escritorio1.moveToFront(gui);
+        gui.setBorder(null);
+        ((BasicInternalFrameUI) gui.getUI()).setNorthPane(null);
     }//GEN-LAST:event_LugarActionPerformed
 
     private void menuonlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuonlineActionPerformed
         VentaOnline gui = new VentaOnline(this);
-escritorio1.removeAll();
-escritorio1.add(gui);
-gui.setVisible(true);
-escritorio1.moveToFront(gui);
+        escritorio1.removeAll();
+        escritorio1.add(gui);
+        gui.setVisible(true);
+        escritorio1.moveToFront(gui);
+        gui.setBorder(null);
+        ((BasicInternalFrameUI) gui.getUI()).setNorthPane(null);
 
     }//GEN-LAST:event_menuonlineActionPerformed
+
+    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
+        ReporteventasVista gui = new ReporteventasVista();
+        escritorio1.removeAll();
+        escritorio1.add(gui);
+        gui.setVisible(true);
+        escritorio1.moveToFront(gui);
+        gui.setBorder(null);
+        ((BasicInternalFrameUI) gui.getUI()).setNorthPane(null);
+    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -293,29 +322,24 @@ escritorio1.moveToFront(gui);
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                
 
-}
+                }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class  
+            java.util.logging.Logger.getLogger(SistemaCine.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-} catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class  
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-} catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SistemaCine.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(SistemaCine.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -331,10 +355,12 @@ escritorio1.moveToFront(gui);
     private javax.swing.JMenuItem Lugar;
     private javax.swing.JDesktopPane escritorio;
     private javax.swing.JDesktopPane escritorio1;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
