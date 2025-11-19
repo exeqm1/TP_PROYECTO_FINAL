@@ -40,13 +40,13 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtProyeccionID" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                              <Component id="buttonEliminar" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jbnuevo" min="-2" max="-2" attributes="0"/>
+                              <Component id="buttonGuardarCambios" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jbmodificar" min="-2" max="-2" attributes="0"/>
+                              <Component id="buttonModificar" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jScrollPane1" min="-2" pref="568" max="-2" attributes="0"/>
                       </Group>
@@ -56,7 +56,7 @@
           </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="324" max="-2" attributes="0"/>
-              <Component id="jbguardar" min="-2" max="-2" attributes="0"/>
+              <Component id="buttonGuardar" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -69,16 +69,16 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jbguardar" min="-2" max="-2" attributes="0"/>
+              <Component id="buttonGuardar" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="175" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jbnuevo" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jbmodificar" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonGuardarCambios" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonModificar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="buttonEliminar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtProyeccionID" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="9" max="32767" attributes="0"/>
           </Group>
@@ -91,28 +91,28 @@
         <Property name="text" type="java.lang.String" value="Gestion de Proyecciones"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jbguardar">
+    <Component class="javax.swing.JButton" name="buttonGuardar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Guardar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbguardarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonGuardarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jbnuevo">
+    <Component class="javax.swing.JButton" name="buttonGuardarCambios">
       <Properties>
         <Property name="text" type="java.lang.String" value="Guardar Cambios"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbnuevoActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonGuardarCambiosActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jbmodificar">
+    <Component class="javax.swing.JButton" name="buttonModificar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Modificar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbmodificarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonModificarActionPerformed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="jPanel1">
@@ -138,11 +138,11 @@
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="txtpelicula" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtsubtitulada" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtes3d" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtidioma" min="-2" pref="71" max="-2" attributes="0"/>
-                      <Component id="txtsala" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBoxPelicula" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="radioButtonSub" min="-2" max="-2" attributes="0"/>
+                      <Component id="radioButton3D" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtIdioma" min="-2" pref="71" max="-2" attributes="0"/>
+                      <Component id="comboBoxSala" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
@@ -150,12 +150,12 @@
                               <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txthorainicio" pref="97" max="32767" attributes="0"/>
+                              <Component id="txtHoraInicio" pref="97" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txtprecio" min="-2" pref="98" max="-2" attributes="0"/>
+                              <Component id="txtPrecio" min="-2" pref="98" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
@@ -166,8 +166,8 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="txtactivar" min="-2" max="-2" attributes="0"/>
-                              <Component id="txthorafin" min="-2" pref="97" max="-2" attributes="0"/>
+                              <Component id="radioButtonActiva" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtHoraFin" min="-2" pref="97" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -181,42 +181,42 @@
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtpelicula" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtprecio" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBoxPelicula" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtPrecio" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtsala" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txthorainicio" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBoxSala" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtHoraInicio" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtidioma" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="txthorafin" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtIdioma" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="txtHoraFin" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="txtes3d" min="-2" max="-2" attributes="0"/>
+                              <Component id="radioButton3D" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                              <Component id="txtsubtitulada" min="-2" max="-2" attributes="0"/>
+                              <Component id="radioButtonSub" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                              <Component id="txtactivar" min="-2" max="-2" attributes="0"/>
+                              <Component id="radioButtonActiva" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -231,16 +231,16 @@
             <Property name="text" type="java.lang.String" value="Pelicula:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtidioma">
+        <Component class="javax.swing.JTextField" name="txtIdioma">
         </Component>
-        <Component class="javax.swing.JComboBox" name="txtsala">
+        <Component class="javax.swing.JComboBox" name="comboBoxSala">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtsalaActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBoxSalaActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Sala&gt;"/>
@@ -251,7 +251,7 @@
             <Property name="text" type="java.lang.String" value="Sala:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="txtpelicula">
+        <Component class="javax.swing.JComboBox" name="comboBoxPelicula">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="0"/>
@@ -266,11 +266,11 @@
             <Property name="text" type="java.lang.String" value="Idioma:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="txtes3d">
+        <Component class="javax.swing.JCheckBox" name="radioButton3D">
         </Component>
-        <Component class="javax.swing.JCheckBox" name="txtsubtitulada">
+        <Component class="javax.swing.JCheckBox" name="radioButtonSub">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtsubtituladaActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioButtonSubActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
@@ -283,23 +283,23 @@
             <Property name="text" type="java.lang.String" value="3D:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtprecio">
+        <Component class="javax.swing.JTextField" name="txtPrecio">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel10">
           <Properties>
             <Property name="text" type="java.lang.String" value="Precio:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txthorafin">
+        <Component class="javax.swing.JTextField" name="txtHoraFin">
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
             <Property name="text" type="java.lang.String" value="Hora Fin:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txthorainicio">
+        <Component class="javax.swing.JTextField" name="txtHoraInicio">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txthorainicioActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtHoraInicioActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel8">
@@ -307,9 +307,9 @@
             <Property name="text" type="java.lang.String" value="Hora Inicio:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="txtactivar">
+        <Component class="javax.swing.JCheckBox" name="radioButtonActiva">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtactivarActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radioButtonActivaActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -326,7 +326,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="jTable1">
+        <Component class="javax.swing.JTable" name="tableProyecciones">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
               <Table columnCount="4" rowCount="4">
@@ -340,12 +340,12 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="buttonEliminar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Eliminar"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonEliminarActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel11">
@@ -353,7 +353,7 @@
         <Property name="text" type="java.lang.String" value="Buscar Proyeccion por ID:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="jTextField1">
+    <Component class="javax.swing.JTextField" name="txtProyeccionID">
     </Component>
   </SubComponents>
 </Form>

@@ -6,10 +6,12 @@
 package Vistas;
 
 import Modelo.Conexion;
+import Modelo.Lugar;
 import Modelo.Pelicula;
 import Modelo.Proyeccion;
 import Modelo.Sala;
 import Persistencia.CompradorData;
+import Persistencia.LugarData;
 import Persistencia.PeliculaData;
 import Persistencia.ProyeccionData;
 import Persistencia.SalaData;
@@ -20,6 +22,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  * S
@@ -28,28 +36,69 @@ import javax.swing.JOptionPane;
  */
 public class proyeccionVista extends javax.swing.JInternalFrame {
 
-    private SistemaCine sc;
+    private SistemaCine sistemaCine = new SistemaCine();
 
-    private Conexion con;
+    private Conexion conex = sistemaCine.conexionDb();
+    private LugarData lugarDAO = new LugarData(conex);
+    private ProyeccionData proyeccionDAO = new ProyeccionData(conex);
 
-    private ProyeccionData pd;
-    private PeliculaData ped;
-    private SalaData sd;
+    DefaultTableModel modeloTableProyeccion;
+    TableRowSorter<DefaultTableModel> sortModelProyeccion;
+    ListSelectionListener selectorLista;
 
-    /**
-     * Creates new form proyeccionVista
-     */
-    private List<Pelicula> p;
-    private List<Sala> s;
+    private void llenarTableProyeccion() {
+
+        DocumentListener listenerFiltro = new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                filtrarProyeccion();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                filtrarProyeccion();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                filtrarProyeccion();
+            }
+        };
+
+        List<Proyeccion> listaProyeccion = proyeccionDAO.listarProyeccion();
+
+        tableProyecciones.setShowGrid(false);
+        modeloTableProyeccion = (DefaultTableModel) tableProyecciones.getModel();
+        modeloTableProyeccion.setRowCount(0);
+
+        for (Proyeccion pro : listaProyeccion) {
+            modeloTableProyeccion.addRow(new Object[]{
+                pro.getIdProyeccion(),
+                pro.getPelicula(),
+                pro.getSala(),
+                pro.getIdioma(),
+                pro.isEs3D(),
+                pro.isSubtitulada(),
+                pro.getHoraInicio(),
+                pro.getHoraFin(),
+                pro.getPrecio(),
+                pro.isActiva()
+            });
+        }
+
+        sortModelProyeccion = new TableRowSorter<>(modeloTableProyeccion);
+        tableProyecciones.setRowSorter(sortModelProyeccion);
+        txtProyeccionID.getDocument().addDocumentListener(listenerFiltro);
+    }
+
+    private void filtrarProyeccion() {
+        String txtIDBuscar = txtProyeccionID.getText().trim();
+        if (txtIDBuscar.isEmpty()) {
+            sortModelProyeccion.setRowFilter(null);
+        } else {
+            sortModelProyeccion.setRowFilter(RowFilter.regexFilter(txtIDBuscar, 0));
+        }
+    }
 
     public proyeccionVista(SistemaCine sc) {
         initComponents();
-        this.sc = sc;
-        this.con = sc.conexionDb();
-        this.pd = new ProyeccionData(con);
-        this.ped = new PeliculaData(con);
-        this.sd = new SalaData(con);
-
         cargarPelicula();
         cargarSala();
     }
@@ -64,56 +113,56 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jbguardar = new javax.swing.JButton();
-        jbnuevo = new javax.swing.JButton();
-        jbmodificar = new javax.swing.JButton();
+        buttonGuardar = new javax.swing.JButton();
+        buttonGuardarCambios = new javax.swing.JButton();
+        buttonModificar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        txtidioma = new javax.swing.JTextField();
-        txtsala = new javax.swing.JComboBox<>();
+        txtIdioma = new javax.swing.JTextField();
+        comboBoxSala = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        txtpelicula = new javax.swing.JComboBox<>();
+        comboBoxPelicula = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        txtes3d = new javax.swing.JCheckBox();
-        txtsubtitulada = new javax.swing.JCheckBox();
+        radioButton3D = new javax.swing.JCheckBox();
+        radioButtonSub = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        txtprecio = new javax.swing.JTextField();
+        txtPrecio = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        txthorafin = new javax.swing.JTextField();
+        txtHoraFin = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        txthorainicio = new javax.swing.JTextField();
+        txtHoraInicio = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        txtactivar = new javax.swing.JCheckBox();
+        radioButtonActiva = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        tableProyecciones = new javax.swing.JTable();
+        buttonEliminar = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtProyeccionID = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(800, 600));
 
         jLabel1.setText("Gestion de Proyecciones");
 
-        jbguardar.setText("Guardar");
-        jbguardar.addActionListener(new java.awt.event.ActionListener() {
+        buttonGuardar.setText("Guardar");
+        buttonGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbguardarActionPerformed(evt);
+                buttonGuardarActionPerformed(evt);
             }
         });
 
-        jbnuevo.setText("Guardar Cambios");
-        jbnuevo.addActionListener(new java.awt.event.ActionListener() {
+        buttonGuardarCambios.setText("Guardar Cambios");
+        buttonGuardarCambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbnuevoActionPerformed(evt);
+                buttonGuardarCambiosActionPerformed(evt);
             }
         });
 
-        jbmodificar.setText("Modificar");
-        jbmodificar.addActionListener(new java.awt.event.ActionListener() {
+        buttonModificar.setText("Modificar");
+        buttonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbmodificarActionPerformed(evt);
+                buttonModificarActionPerformed(evt);
             }
         });
 
@@ -121,9 +170,9 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Pelicula:");
 
-        txtsala.addActionListener(new java.awt.event.ActionListener() {
+        comboBoxSala.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtsalaActionPerformed(evt);
+                comboBoxSalaActionPerformed(evt);
             }
         });
 
@@ -131,9 +180,9 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
         jLabel3.setText("Idioma:");
 
-        txtsubtitulada.addActionListener(new java.awt.event.ActionListener() {
+        radioButtonSub.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtsubtituladaActionPerformed(evt);
+                radioButtonSubActionPerformed(evt);
             }
         });
 
@@ -145,17 +194,17 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
 
         jLabel9.setText("Hora Fin:");
 
-        txthorainicio.addActionListener(new java.awt.event.ActionListener() {
+        txtHoraInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txthorainicioActionPerformed(evt);
+                txtHoraInicioActionPerformed(evt);
             }
         });
 
         jLabel8.setText("Hora Inicio:");
 
-        txtactivar.addActionListener(new java.awt.event.ActionListener() {
+        radioButtonActiva.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtactivarActionPerformed(evt);
+                radioButtonActivaActionPerformed(evt);
             }
         });
 
@@ -175,22 +224,22 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtpelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtsubtitulada)
-                    .addComponent(txtes3d)
-                    .addComponent(txtidioma, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtsala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboBoxPelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(radioButtonSub)
+                    .addComponent(radioButton3D)
+                    .addComponent(txtIdioma, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(73, 73, 73)
                             .addComponent(jLabel8)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txthorainicio, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
+                            .addComponent(txtHoraInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel10)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtprecio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -198,8 +247,8 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                             .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtactivar)
-                            .addComponent(txthorafin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(radioButtonActiva)
+                            .addComponent(txtHoraFin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(46, 46, 46))
         );
         jPanel1Layout.setVerticalGroup(
@@ -208,40 +257,40 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(txtpelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtprecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBoxPelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10))
                 .addGap(7, 7, 7)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(txtsala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txthorainicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtHoraInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(txtidioma, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txthorafin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIdioma, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtHoraFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtes3d)
+                            .addComponent(radioButton3D)
                             .addComponent(jLabel7))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(txtsubtitulada)))
+                            .addComponent(radioButtonSub)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(txtactivar))))
+                            .addComponent(radioButtonActiva))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableProyecciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -252,12 +301,12 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableProyecciones);
 
-        jButton1.setText("Eliminar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonEliminar.setText("Eliminar");
+        buttonEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                buttonEliminarActionPerformed(evt);
             }
         });
 
@@ -281,18 +330,18 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtProyeccionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1)
+                                .addComponent(buttonEliminar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbnuevo)
+                                .addComponent(buttonGuardarCambios)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbmodificar))
+                                .addComponent(buttonModificar))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 568, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(80, 80, 80))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(324, 324, 324)
-                .addComponent(jbguardar)
+                .addComponent(buttonGuardar)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -303,60 +352,58 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbguardar)
+                .addComponent(buttonGuardar)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jbnuevo)
-                    .addComponent(jbmodificar)
-                    .addComponent(jButton1)
+                    .addComponent(buttonGuardarCambios)
+                    .addComponent(buttonModificar)
+                    .addComponent(buttonEliminar)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtProyeccionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtsalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsalaActionPerformed
+    private void comboBoxSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxSalaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtsalaActionPerformed
+    }//GEN-LAST:event_comboBoxSalaActionPerformed
 
-    private void jbguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbguardarActionPerformed
-
-        String idioma = txtidioma.getText();
-
+    private void buttonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarActionPerformed
+        String idioma = txtIdioma.getText();
         if (idioma.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar el idioma ");
-            txtidioma.requestFocus();
+            txtIdioma.requestFocus();
             return;
         }
 
         Proyeccion p;
-        Pelicula pe = (Pelicula) txtpelicula.getSelectedItem();
-        Sala sa = (Sala) txtsala.getSelectedItem();
+        Pelicula pe = (Pelicula) comboBoxPelicula.getSelectedItem();
+        Sala sa = (Sala) comboBoxSala.getSelectedItem();
 
-        boolean es3d = txtes3d.isSelected();
-        boolean subtitulada = txtsubtitulada.isSelected();
+        boolean es3d = radioButton3D.isSelected();
+        boolean subtitulada = radioButtonSub.isSelected();
 
         try {
-            double precio = Double.parseDouble(txtprecio.getText());
+            double precio = Double.parseDouble(txtPrecio.getText());
             if (precio <= 0) {
                 JOptionPane.showMessageDialog(null, "El precio debe ser mayor a 0.");
-                txtprecio.requestFocus();
+                txtPrecio.requestFocus();
                 return;
             }
 
-            if (txthorainicio.getText().isEmpty() || txthorafin.getText().isEmpty()) {
+            if (txtHoraInicio.getText().isEmpty() || txtHoraFin.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "debe ingresar la hora");
                 return;
             }
 
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime inicio = LocalTime.parse(txthorainicio.getText(), formato);
+            LocalTime inicio = LocalTime.parse(txtHoraInicio.getText(), formato);
 
-            LocalTime fin = LocalTime.parse(txthorafin.getText(), formato);
+            LocalTime fin = LocalTime.parse(txtHoraFin.getText(), formato);
             if (fin.isBefore(inicio)) {
                 JOptionPane.showMessageDialog(null, " ingrese la hora correctamente");
                 return;
@@ -364,57 +411,59 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
             boolean activa = true;
 
             p = new Proyeccion(pe, sa, idioma, es3d, subtitulada, inicio, fin, precio, activa);
-
-            pd.agregarProyeccion(p);
-            limpiar();
+            
+            ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+            proyeccionDAO.agregarProyeccion(p);
+            
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "ingrese un numero valido");
         } catch (Exception o) {
             JOptionPane.showMessageDialog(null, "ingrese la hora correctamente");
         }
-    }//GEN-LAST:event_jbguardarActionPerformed
+        limpiar();
+    }//GEN-LAST:event_buttonGuardarActionPerformed
 
-    private void jbnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbnuevoActionPerformed
+    private void buttonGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGuardarCambiosActionPerformed
 
-    }//GEN-LAST:event_jbnuevoActionPerformed
+    }//GEN-LAST:event_buttonGuardarCambiosActionPerformed
 
-    private void txtactivarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtactivarActionPerformed
+    private void radioButtonActivaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonActivaActionPerformed
 
-    }//GEN-LAST:event_txtactivarActionPerformed
+    }//GEN-LAST:event_radioButtonActivaActionPerformed
 
-    private void jbmodificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbmodificarActionPerformed
+    private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
 
-        Pelicula pe = (Pelicula) txtpelicula.getSelectedItem();
-        Sala sa = (Sala) txtsala.getSelectedItem();
+        Pelicula pe = (Pelicula) comboBoxPelicula.getSelectedItem();
+        Sala sa = (Sala) comboBoxSala.getSelectedItem();
         try {
-            boolean es3d = txtes3d.isSelected();
-            boolean subtitulada = txtsubtitulada.isSelected();
+            boolean es3d = radioButton3D.isSelected();
+            boolean subtitulada = radioButtonSub.isSelected();
 
-            double precio = Double.parseDouble(txtprecio.getText());
+            double precio = Double.parseDouble(txtPrecio.getText());
             if (precio <= 0) {
                 JOptionPane.showMessageDialog(null, "El precio debe ser mayor a 0.");
-                txtprecio.requestFocus();
+                txtPrecio.requestFocus();
                 return;
             }
 
-            if (txthorainicio.getText().isEmpty() || txthorafin.getText().isEmpty()) {
+            if (txtHoraInicio.getText().isEmpty() || txtHoraFin.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "debe ingresar la hora");
 
             }
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime inicio = LocalTime.parse(txthorainicio.getText(), formato);
+            LocalTime inicio = LocalTime.parse(txtHoraInicio.getText(), formato);
 
-            LocalTime fin = LocalTime.parse(txthorafin.getText(), formato);
+            LocalTime fin = LocalTime.parse(txtHoraFin.getText(), formato);
             if (fin.isBefore(inicio)) {
                 JOptionPane.showMessageDialog(null, " ingrese la hora correctamente");
                 return;
             }
-            boolean activa = txtactivar.isSelected();
-            String idioma = txtidioma.getText();
+            boolean activa = radioButtonActiva.isSelected();
+            String idioma = txtIdioma.getText();
 
             if (idioma.isEmpty()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Debe ingresar el idioma ");
-                txtidioma.requestFocus();
+                txtIdioma.requestFocus();
                 return;
             }
 
@@ -429,23 +478,28 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
         }
 
 
-    }//GEN-LAST:event_jbmodificarActionPerformed
+    }//GEN-LAST:event_buttonModificarActionPerformed
 
-    private void txtsubtituladaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsubtituladaActionPerformed
+    private void radioButtonSubActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButtonSubActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtsubtituladaActionPerformed
+    }//GEN-LAST:event_radioButtonSubActionPerformed
 
-    private void txthorainicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txthorainicioActionPerformed
+    private void txtHoraInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHoraInicioActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txthorainicioActionPerformed
+    }//GEN-LAST:event_txtHoraInicioActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void buttonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEliminarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_buttonEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton buttonEliminar;
+    private javax.swing.JButton buttonGuardar;
+    private javax.swing.JButton buttonGuardarCambios;
+    private javax.swing.JButton buttonModificar;
+    private javax.swing.JComboBox<Pelicula> comboBoxPelicula;
+    private javax.swing.JComboBox<Sala> comboBoxSala;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -459,51 +513,45 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JButton jbguardar;
-    private javax.swing.JButton jbmodificar;
-    private javax.swing.JButton jbnuevo;
-    private javax.swing.JCheckBox txtactivar;
-    private javax.swing.JCheckBox txtes3d;
-    private javax.swing.JTextField txthorafin;
-    private javax.swing.JTextField txthorainicio;
-    private javax.swing.JTextField txtidioma;
-    private javax.swing.JComboBox<Pelicula> txtpelicula;
-    private javax.swing.JTextField txtprecio;
-    private javax.swing.JComboBox<Sala> txtsala;
-    private javax.swing.JCheckBox txtsubtitulada;
+    private javax.swing.JCheckBox radioButton3D;
+    private javax.swing.JCheckBox radioButtonActiva;
+    private javax.swing.JCheckBox radioButtonSub;
+    private javax.swing.JTable tableProyecciones;
+    private javax.swing.JTextField txtHoraFin;
+    private javax.swing.JTextField txtHoraInicio;
+    private javax.swing.JTextField txtIdioma;
+    private javax.swing.JTextField txtPrecio;
+    private javax.swing.JTextField txtProyeccionID;
     // End of variables declaration//GEN-END:variables
 public void cargarPelicula() {
-        p = ped.listarPeliculasEnCartelera();
+        PeliculaData peliDAO = new PeliculaData(conex);
+        List<Pelicula> listaPelis = peliDAO.listarPeliculasEnCartelera();
         DefaultComboBoxModel<Pelicula> modelo = new DefaultComboBoxModel<>();
-        for (Pelicula peli : p) {
+        for (Pelicula peli : listaPelis) {
             modelo.addElement(peli);
         }
-        txtpelicula.setModel(modelo);
+        comboBoxPelicula.setModel(modelo);
     }
 
     public void cargarSala() {
-        s = sd.listarSalasActivas();
-
+        SalaData salaDAO = new SalaData(conex);
+        List<Sala> listaSala = salaDAO.listarSalasActivas();
         DefaultComboBoxModel<Sala> modelo = new DefaultComboBoxModel<>();
-        for (Sala sala : s) {
+        for (Sala sala : listaSala) {
             modelo.addElement(sala);
-
         }
-        txtsala.setModel(modelo);
-
+        comboBoxSala.setModel(modelo);
     }
 
     public void limpiar() {
-        txtidioma.setText("");
-        txtprecio.setText("");
-        txthorainicio.setText("");
-        txthorafin.setText("");
-        txtes3d.setSelected(false);
-        txtsubtitulada.setSelected(false);
-        txtpelicula.setSelectedIndex(-1);
-        txtsala.setSelectedIndex(-1);
+        txtIdioma.setText("");
+        txtPrecio.setText("");
+        txtHoraInicio.setText("");
+        txtHoraFin.setText("");
+        radioButton3D.setSelected(false);
+        radioButtonSub.setSelected(false);
+        comboBoxPelicula.setSelectedIndex(-1);
+        comboBoxSala.setSelectedIndex(-1);
 
     }
 
