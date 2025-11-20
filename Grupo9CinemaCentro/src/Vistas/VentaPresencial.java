@@ -23,8 +23,8 @@ import javax.swing.table.TableRowSorter;
  */
 public class VentaPresencial extends javax.swing.JInternalFrame {
 
-    private SistemaCine sistemaCine = new SistemaCine();
-    private Conexion conex = sistemaCine.conexionDb();
+    private SistemaCine sistemaCine;
+    private Conexion conex ;
 
     DefaultTableModel modeloTableComprador; // (DTM Personalizado)
     TableRowSorter<DefaultTableModel> sortModelComprador; // (Filtrado)
@@ -60,9 +60,8 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                 t.getComprador(),
                 t.getAsiento(),
                 t.getFechaCompra(),
-                t.getFechaFuncion(),
-                t.getFuncion().getHoraInicio(),
-                t.getFuncion().getPelicula(),
+                
+                
                 t.getMonto(),
                 t.isActivo()
             });
@@ -155,27 +154,16 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
 
     
     private void llenarListSalas(Pelicula peli) {
-        ProyeccionData proyeccionDAO = new ProyeccionData(conex);
-        List<Sala> salas = proyeccionDAO.salasPorPelicula(peli.getIdPelicula());
+    comboBoxSala.removeAllItems();
+    listenerSala(); // 
 
-        for (Sala s : salas) {
-            comboBoxSala.addItem(s);
-        }
-        listenerSala();
+    ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+    List<Sala> salas = proyeccionDAO.salasPorPelicula(peli.getIdPelicula());
 
-        if (comboBoxSala.getItemCount() > 0) {
-            Sala s = (Sala) comboBoxSala.getSelectedItem();
-            proyeccionDAO = new ProyeccionData(conex);
-
-            List<Proyeccion> lista = proyeccionDAO.proyeccionesPorPeliculaYSala(
-                    peli.getIdPelicula(), s.getIdSala());
-
-            comboBoxProyeccion.removeAllItems();
-            for (Proyeccion p : lista) {
-                comboBoxProyeccion.addItem(p);
-            }
-        }
+    for (Sala s : salas) {
+        comboBoxSala.addItem(s);
     }
+}
 
     private void listenerSala() {
 
@@ -262,6 +250,12 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
     }
 
     public VentaPresencial(SistemaCine sc) {
+        
+      this.sistemaCine = new SistemaCine();         
+    this.conex = sistemaCine.conexionDb();   
+        
+        
+        
         setSize(800, 600);
         setResizable(false);
         initComponents();
@@ -278,7 +272,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
 
         if (comboBoxPeliculas.getItemCount() > 0) {
             Pelicula seleccionada = (Pelicula) comboBoxPeliculas.getSelectedItem();
-            llenarListSalas(seleccionada); // ← carga las salas
+            llenarListSalas(seleccionada); 
         }
     }
 
@@ -579,14 +573,13 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
                             .addComponent(botonAnularTicket)
                             .addGap(18, 18, 18)
                             .addComponent(botonBorrarTicket))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(botonGenerarTicket)
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(74, 74, 74)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(botonGenerarTicket)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(74, 74, 74)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 732, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(293, 293, 293)
                         .addComponent(jLabel7)))
@@ -677,7 +670,7 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         Proyeccion funcion = (Proyeccion) comboBoxProyeccion.getSelectedItem();
 
         TicketData ticketDAO = new TicketData(conex);
-        Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision, fechaFuncion, monto, estado, funcion);
+        Ticket ticket = new Ticket(asiento, nombreComprador, fechaEmision,  monto, estado, funcion);
         ticketDAO.guardarTicket(ticket);
 
         LugarData lugarDAO = new LugarData(conex);
@@ -686,10 +679,6 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
         limpiarCampos();
 
     }//GEN-LAST:event_botonGenerarTicketActionPerformed
-
-    private void txtIDTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDTicketActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIDTicketActionPerformed
 
     private void botonBorrarTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBorrarTicketActionPerformed
         if (tableTicket.getSelectedRow() < 0) {
@@ -735,6 +724,10 @@ public class VentaPresencial extends javax.swing.JInternalFrame {
     private void comboBoxSalaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxSalaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_comboBoxSalaActionPerformed
+
+    private void txtIDTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDTicketActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIDTicketActionPerformed
 
     /**
      * @param args the command line arguments

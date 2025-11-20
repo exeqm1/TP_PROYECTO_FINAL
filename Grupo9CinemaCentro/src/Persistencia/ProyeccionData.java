@@ -40,7 +40,7 @@ public class ProyeccionData {
     }
 
     public void agregarProyeccion(Proyeccion proyeccion) {
-        String sql = "INSERT INTO `proyeccion`( `Id_pelicula`, `Id_sala`, `idioma`, `es3D`, `subtitulada`, `horaInicio`, `horaFin`, `precio`, `activa`) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO `proyeccion`( `Id_pelicula`, `Id_sala`, `idioma`, `es3D`, `subtitulada`, `horaInicio`, `horaFin`, `precio`, `activa`, `fecha`) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try {
             PreparedStatement ps = conex.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, proyeccion.getPelicula().getIdPelicula());
@@ -52,6 +52,21 @@ public class ProyeccionData {
             ps.setTime(7, Time.valueOf(proyeccion.getHoraFin()));
             ps.setDouble(8, proyeccion.getPrecio());
             ps.setBoolean(9, proyeccion.isActiva());
+            
+            
+            
+            if (proyeccion.getFecha() != null) {
+    ps.setDate(10, Date.valueOf(proyeccion.getFecha()));
+} else {
+    ps.setNull(10, java.sql.Types.DATE);
+}
+            
+            
+        
+            
+            
+            
+            
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -67,13 +82,14 @@ public class ProyeccionData {
     }
 
     public List<Proyeccion> listarProyeccion() {
-        String sql = "SELECT p.Id_proyeccion, p.idioma, p.es3D, p.subtitulada, p.horaInicio, p.horaFin, p.precio, p.activa,  \n"
-                + "                 pe.Id_pelicula, pe.titulo, pe.director, pe.actores, pe.genero, pe.origen, pe.estreno, pe.enCartelera, \n"
-                + "                 s.Id_sala, s.nroSala, s.apta3D, s.capacidad, s.estado  \n"
-                + "                 FROM proyeccion p  \n"
-                + "                 JOIN pelicula pe ON p.Id_pelicula = pe.Id_pelicula  \n"
-                + "                 JOIN sala s ON p.Id_sala = s.Id_sala \n"
-                + "                 ORDER BY p.Id_proyeccion;";
+       String sql = "SELECT p.Id_proyeccion, p.idioma, p.es3D, p.subtitulada, p.horaInicio, p.horaFin, p.precio, p.activa, p.fecha, \n"
+           + "       pe.Id_pelicula, pe.titulo, pe.director, pe.actores, pe.genero, pe.origen, pe.estreno, pe.enCartelera, \n"
+           + "       s.Id_sala, s.nroSala, s.apta3D, s.capacidad, s.estado \n"
+           + "FROM proyeccion p \n"
+           + "JOIN pelicula pe ON p.Id_pelicula = pe.Id_pelicula \n"
+           + "JOIN sala s ON p.Id_sala = s.Id_sala \n"
+           + "ORDER BY p.Id_proyeccion;";
+
 
         List<Proyeccion> lista = new ArrayList<>();
 
@@ -95,16 +111,22 @@ public class ProyeccionData {
                 p.setIdProyeccion(rs.getInt("Id_proyeccion"));
                 p.setIdioma(rs.getString("idioma"));
                 p.setEs3D(rs.getBoolean("es3D"));
-                p.setSubtitulada(rs.getBoolean("subtitulada"));
-                p.setHoraInicio(rs.getTime("horaInicio").toLocalTime());
-                p.setHoraFin(rs.getTime("horaFin").toLocalTime());
+                p.setSubtitulada(rs.getBoolean("subtitulada"));   
                 p.setPrecio(rs.getDouble("precio"));
                 p.setActiva(rs.getBoolean("activa"));
+                Time tInicio = rs.getTime("horaInicio");
+if (tInicio != null){ p.setHoraInicio(tInicio.toLocalTime());}
+
+Time tFin = rs.getTime("horaFin");
+if (tFin != null){ p.setHoraFin(tFin.toLocalTime());}
+
+Date f = rs.getDate("fecha");
+if (f != null) {p.setFecha(f.toLocalDate());}
 
                 sala.setIdSala(rs.getInt("Id_sala"));
                 sala.setApta3D(rs.getBoolean("apta3D"));
                 sala.setCapacidad(rs.getInt("capacidad"));
-                sala.setEstado(rs.getBoolean("activa"));
+                sala.setEstado(rs.getBoolean("estado"));
                 sala.setNroSala(rs.getInt("nroSala"));
 
                 pel.setTitulo(rs.getString("titulo"));
@@ -129,7 +151,7 @@ public class ProyeccionData {
 
     public void modificarProyeccion(Proyeccion pro) {
 
-        String sql = "UPDATE `proyeccion` SET id_pelicula=?, id_sala=?, idioma=?,es3D=?,subtitulada=?,horaInicio=?,horaFin=?,precio=?, activa = ? WHERE Id_proyeccion=?";
+        String sql = "UPDATE `proyeccion` SET id_pelicula=?, id_sala=?, idioma=?,es3D=?,subtitulada=?,horaInicio=?,horaFin=?,precio=?, activa = ?, fecha=? WHERE Id_proyeccion=?";
         try {
             PreparedStatement ps = conex.prepareStatement(sql);
             ps.setInt(1, pro.getPelicula().getIdPelicula());
@@ -139,6 +161,10 @@ public class ProyeccionData {
             ps.setBoolean(4, pro.isEs3D());
 
             ps.setBoolean(5, pro.isSubtitulada());
+            
+            
+            
+            
 
             ps.setTime(6, Time.valueOf(pro.getHoraInicio()));
 
@@ -147,7 +173,23 @@ public class ProyeccionData {
             ps.setDouble(8, pro.getPrecio());
 
             ps.setBoolean(9, pro.isActiva());
-            ps.setInt(10, pro.getIdProyeccion());
+            
+            if (pro.getFecha() != null) {
+    ps.setDate(10, Date.valueOf(pro.getFecha()));
+} else {
+    ps.setNull(10, java.sql.Types.DATE);
+}
+
+            
+            
+            ps.setDate(10,Date.valueOf(pro.getFecha()) );
+            
+            
+            
+            
+            
+            
+            ps.setInt(11, pro.getIdProyeccion());
 
             int rs = ps.executeUpdate();
             if (rs >= 1) {
@@ -200,6 +242,7 @@ public class ProyeccionData {
                 pr.setHoraFin(rs.getTime("horaFin").toLocalTime());
 
                 pr.setActiva(rs.getBoolean("activa"));
+                pr.setFecha(rs.getDate("fecha").toLocalDate());
 
                 Pelicula pe = new Pelicula();
 
@@ -214,6 +257,7 @@ public class ProyeccionData {
 
                 sa.setIdSala(rs.getInt("id_sala"));
                 sa.setNroSala(rs.getInt("nroSala"));
+                
                 pr.setSala(sa);
                 lista.add(pr);
             }
@@ -263,15 +307,47 @@ public class ProyeccionData {
                     proyeccion.setIdioma(rs.getString("idioma"));
                     proyeccion.setEs3D(rs.getBoolean("es3D"));
                     proyeccion.setSubtitulada(rs.getBoolean("subtitulada"));
-                    proyeccion.setHoraInicio(rs.getTime("horaInicio").toLocalTime());
-                    proyeccion.setHoraFin(rs.getTime("horaFin").toLocalTime());
-                    proyeccion.setPrecio(rs.getDouble("precio"));
-                    proyeccion.setActiva(rs.getBoolean("activa"));
-                    Pelicula pelicula = peliDAO.buscarPelicula(idPelicula);
-                    Sala sala = salaDAO.buscarSala(idSala);
+                    
+                    
+                  
+                    
+                    
+                    Time tInicio = rs.getTime("horaInicio");
+if (tInicio != null) {
+    proyeccion.setHoraInicio(tInicio.toLocalTime());
+}
 
-                    proyeccion.setPelicula(pelicula);
-                    proyeccion.setSala(sala);
+Time tFin = rs.getTime("horaFin");
+if (tFin != null) {
+    proyeccion.setHoraFin(tFin.toLocalTime());
+}
+
+Date fechaSql = rs.getDate("fecha");
+if (fechaSql != null) {
+    proyeccion.setFecha(fechaSql.toLocalDate());
+}
+
+                    
+                    
+                    proyeccion.setActiva(rs.getBoolean("activa"));
+                   
+                    
+                    Pelicula pelicula = peliDAO.buscarPelicula(idPelicula);
+if (pelicula == null) {
+    throw new RuntimeException("No se encontró la película con ID = " + idPelicula);
+}
+
+Sala sala = salaDAO.buscarSala(idSala);
+if (sala == null) {
+    throw new RuntimeException("No se encontró la sala con ID = " + idSala);
+}
+
+proyeccion.setPelicula(pelicula);
+proyeccion.setSala(sala);
+
+                    
+                    
+                   
 
                 }
             }
@@ -297,8 +373,12 @@ public class ProyeccionData {
                     Sala sala = salaDAO.buscarSala(rs.getInt("Id_sala"));
 
                     if (pelicula != null && sala != null) {
+                        proyeccion.setFecha(rs.getDate("fecha").toLocalDate());
                         proyeccion.setHoraInicio(rs.getTime("horaInicio").toLocalTime());
                         proyeccion.setHoraFin(rs.getTime("horaFin").toLocalTime());
+                       
+
+                        
                         proyeccion.setPelicula(pelicula);
                         proyeccion.setSala(sala);
                         listaProyecciones.add(proyeccion);
@@ -317,7 +397,10 @@ public class ProyeccionData {
 
     public List<Sala> salasPorPelicula(int idPelicula) {
 
-        String sql = "SELECT DISTINCT s.* FROM sala s JOIN proyeccion p ON p.Id_sala = s.Id_sala WHERE p.Id_pelicula = ? AND p.activa = 1";
+       String sql = "SELECT DISTINCT s.* "
+               + "FROM sala s "
+               + "JOIN proyeccion p ON p.Id_sala = s.Id_sala "
+               + "WHERE p.Id_pelicula = ? AND p.activa = 1";
 
         List<Sala> lista = new ArrayList<>();
 
@@ -334,6 +417,7 @@ public class ProyeccionData {
                 s.setCapacidad(rs.getInt("capacidad"));
                 s.setEstado(rs.getBoolean("estado"));
 
+
                 lista.add(s);
             }
 
@@ -346,42 +430,62 @@ public class ProyeccionData {
 
     public List<Proyeccion> proyeccionesPorPeliculaYSala(int idPelicula, int idSala) {
 
-        String sql = "SELECT * FROM proyeccion WHERE Id_pelicula = ? AND Id_sala = ? AND activa = 1";
+    String sql = "SELECT p.* "
+            + "FROM proyeccion p "
+            + "WHERE p.Id_pelicula = ? AND p.Id_sala = ? AND p.activa = 1";
 
-        List<Proyeccion> lista = new ArrayList<>();
+    List<Proyeccion> lista = new ArrayList<>();
 
-        try (PreparedStatement ps = conex.prepareStatement(sql)) {
+    try (PreparedStatement ps = conex.prepareStatement(sql)) {
 
-            ps.setInt(1, idPelicula);
-            ps.setInt(2, idSala);
+        ps.setInt(1, idPelicula);
+        ps.setInt(2, idSala);
 
-            ResultSet rs = ps.executeQuery();
+        ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
+        while (rs.next()) {
 
-                Proyeccion p = new Proyeccion();
+            Proyeccion p = new Proyeccion();
 
-                p.setIdProyeccion(rs.getInt("Id_proyeccion"));
-                Pelicula pe = peliDAO.buscarPelicula(rs.getInt("Id_pelicula"));
-                Sala s = salaDAO.buscarSala(rs.getInt("Id_sala"));
+            // IDs
+            int idProy = rs.getInt("Id_proyeccion");
+            int idPel = rs.getInt("Id_pelicula");
+            int idSa = rs.getInt("Id_sala");
 
-                p.setPelicula(pe);
-                p.setSala(s);
-                p.setIdioma(rs.getString("idioma"));
-                p.setEs3D(rs.getBoolean("es3D"));
-                p.setSubtitulada(rs.getBoolean("subtitulada"));
-                p.setHoraInicio(rs.getTime("horaInicio").toLocalTime());
-                p.setHoraFin(rs.getTime("horaFin").toLocalTime());
-                p.setPrecio(rs.getDouble("precio"));
-                p.setActiva(rs.getBoolean("activa"));
+            // Seteo básico
+            p.setIdProyeccion(idProy);
 
-                lista.add(p);
-            }
+            // Cargar objetos completos
+            Pelicula pe = peliDAO.buscarPelicula(idPel);
+            Sala sa = salaDAO.buscarSala(idSa);
 
-        } catch (Exception e) {
-            System.out.println("Error al traer proyeccionesPorPeliculaYSala: " + e.getMessage());
+            p.setPelicula(pe);
+            p.setSala(sa);
+
+            // Datos primitivos
+            p.setIdioma(rs.getString("idioma"));
+            p.setEs3D(rs.getBoolean("es3D"));
+            p.setSubtitulada(rs.getBoolean("subtitulada"));
+            p.setPrecio(rs.getDouble("precio"));
+            p.setActiva(rs.getBoolean("activa"));
+
+            // Fechas y horas
+            Time tInicio = rs.getTime("horaInicio");
+            if (tInicio != null) p.setHoraInicio(tInicio.toLocalTime());
+
+            Time tFin = rs.getTime("horaFin");
+            if (tFin != null) p.setHoraFin(tFin.toLocalTime());
+
+            Date fechaSql = rs.getDate("fecha");
+            if (fechaSql != null) p.setFecha(fechaSql.toLocalDate());
+
+            lista.add(p);
         }
 
-        return lista;
+    } catch (SQLException e) {
+        System.out.println("Error al traer proyeccionesPorPeliculaYSala: " + e.getMessage());
     }
+
+    return lista;
+}
 }

@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Estudiante
  */
-public class ReporteVentasVista extends javax.swing.JInternalFrame {
+public class ReporteventasVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
     private Conexion con = sistemaCine.conexionDb();
@@ -25,7 +25,7 @@ public class ReporteVentasVista extends javax.swing.JInternalFrame {
     private PeliculaData peliculaData;
     private TicketData ticketData;
     
-    public ReporteVentasVista() {
+    public ReporteventasVista() {
         initComponents();
         
         peliculaData = new PeliculaData(con);
@@ -193,12 +193,12 @@ public class ReporteVentasVista extends javax.swing.JInternalFrame {
     private void cargarReporte(int idPelicula, LocalDate desde, LocalDate hasta) {
         modelo.setRowCount(0);
 
-        List<Object[]> lista = ticketData.listarVentas(idPelicula, desde, hasta);
+        List<Object[]> lista = ticketData.listarVentas();
 
         double totalGeneral=0;
         for (Object[] fila : lista) {
             modelo.addRow(fila);
-            totalGeneral +=(double)fila[6];
+            totalGeneral +=(double)fila[5];
         }
         jTextField1.setText(String.valueOf(totalGeneral));
         

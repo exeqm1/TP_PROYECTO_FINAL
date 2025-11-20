@@ -18,6 +18,7 @@ import Persistencia.SalaData;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -28,6 +29,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+
 
 /**
  * S
@@ -79,7 +81,8 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
                 pro.getHoraInicio(),
                 pro.getHoraFin(),
                 pro.getPrecio(),
-                pro.isActiva()
+                pro.isActiva(),
+                    pro.getFecha()
             });
         }
 
@@ -139,6 +142,7 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
         jLabel8 = new javax.swing.JLabel();
         radioButtonActiva = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
+        fecha1 = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableProyecciones = new javax.swing.JTable();
         buttonEliminar = new javax.swing.JButton();
@@ -234,22 +238,27 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
                     .addComponent(txtIdioma, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(73, 73, 73)
-                            .addComponent(jLabel8)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtHoraInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel10)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(73, 73, 73)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtHoraInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel2))
+                        .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel9)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fecha1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(radioButtonActiva)
                             .addComponent(txtHoraFin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -285,7 +294,8 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(radioButtonSub)))
+                            .addComponent(radioButtonSub)
+                            .addComponent(fecha1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -321,7 +331,7 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(62, Short.MAX_VALUE)
+                .addContainerGap(136, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -366,7 +376,7 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
                     .addComponent(buttonEliminar)
                     .addComponent(jLabel11)
                     .addComponent(txtProyeccionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(123, Short.MAX_VALUE))
         );
 
         pack();
@@ -413,8 +423,11 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
                 return;
             }
             boolean activa = true;
+LocalDate f = fecha1.getDate().toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate();
 
-            p = new Proyeccion(pe, sa, idioma, es3d, subtitulada, inicio, fin, precio, activa);
+            p = new Proyeccion(pe, sa, idioma, es3d, subtitulada, inicio, fin, precio, activa,f);
 
             ProyeccionData proyeccionDAO = new ProyeccionData(conex);
             proyeccionDAO.agregarProyeccion(p);
@@ -466,6 +479,9 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, "Revisar formatos precio (numerico) y horas (HH:mm)");
             return;
         }
+       LocalDate f = fecha1.getDate().toInstant()
+                          .atZone(ZoneId.systemDefault())
+                          .toLocalDate();
 
         Proyeccion pro = new Proyeccion(idProyeccion, peli, sala, idioma, es3D, subtitulada, horaInicio, horaFin, precio, activa);
 
@@ -592,6 +608,7 @@ public class ProyeccionVista extends javax.swing.JInternalFrame {
     private javax.swing.JButton buttonModificar;
     private javax.swing.JComboBox<Pelicula> comboBoxPelicula;
     private javax.swing.JComboBox<Sala> comboBoxSala;
+    private com.toedter.calendar.JDateChooser fecha1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

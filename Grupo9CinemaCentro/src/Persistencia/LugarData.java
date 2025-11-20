@@ -149,11 +149,10 @@ public class LugarData {
 
                 while (rs.next()) {
                     Lugar asiento = new Lugar();
-                    int id = rs.getInt("Id_proyeccion");
-                    Proyeccion proyeccion = proyeccionDAO.buscarProyeccion(id);
+                    
                     
                     asiento.setIdLugar(rs.getInt("Id_lugar"));
-                    asiento.setProyeccion(proyeccion);
+                    
                     asiento.setFila(rs.getInt("fila"));
                     asiento.setNumero(rs.getInt("numero"));
                     asiento.setDisponible(rs.getBoolean("disponible"));
@@ -211,38 +210,31 @@ public class LugarData {
         }
     }
 
-    public List<Lugar> lugaresDisponiblesPorProyeccion(int Id_proyeccion) {
-        String sql = "SELECT * FROM lugar WHERE Id_proyeccion = ? AND disponible = 1";
-        List<Lugar> lista = new ArrayList<>();
+    public List<Lugar> lugaresDisponiblesPorProyeccion(int idPro) {
 
-        try (PreparedStatement ps = conex.prepareStatement(sql)) {
-            ps.setInt(1, Id_proyeccion);
-            try (ResultSet rs = ps.executeQuery()) {
+    List<Lugar> lista = new ArrayList<>();
 
-                while (rs.next()) {
-                    Lugar l = new Lugar();
-                    l.setIdLugar(rs.getInt("Id_lugar"));
-                    l.setFila(rs.getInt("fila"));
-                    l.setNumero(rs.getInt("numero"));
-                    l.setDisponible(rs.getBoolean("disponible"));
+    String sql = "SELECT * FROM lugar WHERE Id_proyeccion = ? AND disponible = 1";
 
-                    int idpro = rs.getInt("Id_proyeccion");
+    try (PreparedStatement ps = conex.prepareStatement(sql)) {
+        ps.setInt(1, idPro);
+        ResultSet rs = ps.executeQuery();
 
-                    Proyeccion pro = proyeccionDAO.buscarProyeccion(idpro);
-                    
-                    if (pro != null) {
-                    l.setProyeccion(pro);
-
-                    lista.add(l);
-                    }
-                }
-
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error" + ex.getMessage());
+        while (rs.next()) {
+            Lugar l = new Lugar();
+            l.setIdLugar(rs.getInt("Id_lugar"));
+            l.setFila(rs.getInt("fila"));
+            l.setNumero(rs.getInt("numero"));
+            l.setDisponible(rs.getBoolean("disponible"));
+            lista.add(l);
         }
 
-        return lista;
+    } catch (SQLException e) {
+        System.out.println("Error listar lugares: " + e.getMessage());
     }
+
+    return lista;
+}
+
 
 }

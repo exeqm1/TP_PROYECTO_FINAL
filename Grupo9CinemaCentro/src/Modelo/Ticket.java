@@ -19,7 +19,7 @@ public class Ticket {
     private Comprador comprador;
     private Proyeccion funcion;
     private LocalDate fechaCompra;
-    private LocalDate fechaFuncion;
+    
     private double monto;
     private boolean activo;
     
@@ -27,12 +27,12 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket( Lugar asiento, Comprador comprador, LocalDate fechaCompra, LocalDate fechaFuncion, double monto, boolean activo, Proyeccion funcion) {
+    public Ticket( Lugar asiento, Comprador comprador, LocalDate fechaCompra,  double monto, boolean activo, Proyeccion funcion) {
         
         this.asiento = asiento;
         this.comprador = comprador;
         this.fechaCompra = fechaCompra;
-        this.fechaFuncion = fechaFuncion;
+       
         this.monto = monto;
         this.activo = activo;
         this.funcion = funcion;
@@ -70,13 +70,7 @@ public class Ticket {
         this.fechaCompra = fechaCompra;
     }
 
-    public LocalDate getFechaFuncion() {
-        return fechaFuncion;
-    }
-
-    public void setFechaFuncion(LocalDate fechaFuncion) {
-        this.fechaFuncion = fechaFuncion;
-    }
+  
 
     public double getMonto() {
         return monto;
@@ -105,7 +99,7 @@ public class Ticket {
     
     @Override
     public String toString() {
-        return "Ticket{" + "idTicket=" + idTicket + ", asiento=" + asiento + ", comprador=" + comprador + ", fechaCompra=" + fechaCompra + ", fechaFuncion=" + fechaFuncion + ", monto=" + monto + ", activo=" + activo + '}';
+        return "Ticket{" + "idTicket=" + idTicket + ", asiento=" + asiento + ", comprador=" + comprador + ", fechaCompra=" + fechaCompra + ", monto=" + monto + ", activo=" + activo + '}';
     }
     
 

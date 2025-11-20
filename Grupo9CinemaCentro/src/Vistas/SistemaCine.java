@@ -207,7 +207,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        PeliculaVista GUI = new PeliculaVista(this);
+        peliculaVista GUI = new peliculaVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -251,7 +251,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        SalaVista GUI = new SalaVista(this);
+        salaVista GUI = new salaVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -279,7 +279,7 @@ public class SistemaCine extends javax.swing.JFrame {
     private void LugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LugarActionPerformed
         escritorio1.removeAll();
         escritorio1.repaint();
-        LugarVista gui = new LugarVista(this);
+        lugarVista gui = new lugarVista(this);
         gui.setVisible(true);
         escritorio1.add(gui);
         escritorio1.moveToFront(gui);
@@ -299,7 +299,7 @@ public class SistemaCine extends javax.swing.JFrame {
     }//GEN-LAST:event_menuonlineActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-        ReporteVentasVista gui = new ReporteVentasVista();
+        ReporteventasVista gui = new ReporteventasVista();
         escritorio1.removeAll();
         escritorio1.add(gui);
         gui.setVisible(true);

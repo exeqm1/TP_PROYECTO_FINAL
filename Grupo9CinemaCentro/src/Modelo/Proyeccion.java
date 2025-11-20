@@ -27,8 +27,9 @@ public class Proyeccion {
     private LocalTime horaFin;
     private double precio;
     private boolean activa;
+    private LocalDate fecha;
 
-    public Proyeccion(Pelicula pelicula, Sala sala, String idioma, boolean es3D, boolean subtitulada, LocalTime horaInicio, LocalTime horaFin, double precio, boolean activa) {
+    public Proyeccion(Pelicula pelicula, Sala sala, String idioma, boolean es3D, boolean subtitulada, LocalTime horaInicio, LocalTime horaFin, double precio, boolean activa, LocalDate fecha) {
         this.pelicula = pelicula;
         this.sala = sala;
         this.idioma = idioma;
@@ -38,6 +39,7 @@ public class Proyeccion {
         this.horaFin = horaFin;
         this.precio = precio;
         this.activa = activa;
+        this.fecha=fecha;
     }
 
     
@@ -53,6 +55,7 @@ public class Proyeccion {
         this.horaFin = horaFin;
         this.precio = precio;
         this.activa = activa;
+         this.fecha=fecha;
     }
 
     
@@ -71,6 +74,14 @@ public class Proyeccion {
  
 
     public Proyeccion() {
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
     }
 
     public int getIdProyeccion() {

@@ -27,7 +27,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Usuario
  */
-public class LugarVista extends javax.swing.JInternalFrame {
+public class lugarVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
 
@@ -65,7 +65,7 @@ public class LugarVista extends javax.swing.JInternalFrame {
         for (Lugar l : listaLugares) {
             modeloTableButacas.addRow(new Object[]{
                 l.getIdLugar(),
-                l.getProyeccion().toString(),
+             
                 l.getFila(),
                 l.getNumero(),
                 l.getDisponible()
@@ -125,7 +125,7 @@ public class LugarVista extends javax.swing.JInternalFrame {
         comboBoxProyeccion.setSelectedIndex(-1);
     }
 
-    public LugarVista(SistemaCine sc) {
+    public lugarVista(SistemaCine sc) {
 
         initComponents();
         tableButacas.setDefaultEditor(Object.class, null);
