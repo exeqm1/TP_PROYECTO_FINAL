@@ -127,12 +127,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menusalaActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="menucomprador">
+            <MenuItem class="javax.swing.JMenuItem" name="menupelicula">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Compradores"/>
+                <Property name="text" type="java.lang.String" value="Peliculas"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menucompradorActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menupeliculaActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuproyeccion">
@@ -151,12 +151,12 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="LugarActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="menupelicula">
+            <MenuItem class="javax.swing.JMenuItem" name="menucomprador">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Peliculas"/>
+                <Property name="text" type="java.lang.String" value="Compradores"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menupeliculaActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menucompradorActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

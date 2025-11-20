@@ -23,7 +23,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Usuario
  */
-public class compradorVista extends javax.swing.JInternalFrame {
+public class CompradorVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sc = new SistemaCine();
     Conexion conex = sc.conexionDb();
@@ -89,7 +89,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
 
     }
 
-    public compradorVista(SistemaCine sc) {
+    public CompradorVista(SistemaCine sc) {
         initComponents();
         tableCompradores.setDefaultEditor(Object.class, null);
        
@@ -450,6 +450,7 @@ public class compradorVista extends javax.swing.JInternalFrame {
             }
 
             buttonGuardar.setEnabled(true);
+            buttonGuardarCambios.setEnabled(false);
 
         }
     }//GEN-LAST:event_buttonGuardarCambiosActionPerformed

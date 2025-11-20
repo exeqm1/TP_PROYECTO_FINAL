@@ -58,10 +58,10 @@ public class SistemaCine extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         menuticket = new javax.swing.JMenu();
         menusala = new javax.swing.JMenuItem();
-        menucomprador = new javax.swing.JMenuItem();
+        menupelicula = new javax.swing.JMenuItem();
         menuproyeccion = new javax.swing.JMenuItem();
         Lugar = new javax.swing.JMenuItem();
-        menupelicula = new javax.swing.JMenuItem();
+        menucomprador = new javax.swing.JMenuItem();
         jventa = new javax.swing.JMenu();
         jmenuticket = new javax.swing.JMenuItem();
         menuonline = new javax.swing.JMenuItem();
@@ -131,13 +131,13 @@ public class SistemaCine extends javax.swing.JFrame {
         });
         menuticket.add(menusala);
 
-        menucomprador.setText("Compradores");
-        menucomprador.addActionListener(new java.awt.event.ActionListener() {
+        menupelicula.setText("Peliculas");
+        menupelicula.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menucompradorActionPerformed(evt);
+                menupeliculaActionPerformed(evt);
             }
         });
-        menuticket.add(menucomprador);
+        menuticket.add(menupelicula);
 
         menuproyeccion.setText("Proyeccion");
         menuproyeccion.addActionListener(new java.awt.event.ActionListener() {
@@ -155,13 +155,13 @@ public class SistemaCine extends javax.swing.JFrame {
         });
         menuticket.add(Lugar);
 
-        menupelicula.setText("Peliculas");
-        menupelicula.addActionListener(new java.awt.event.ActionListener() {
+        menucomprador.setText("Compradores");
+        menucomprador.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menupeliculaActionPerformed(evt);
+                menucompradorActionPerformed(evt);
             }
         });
-        menuticket.add(menupelicula);
+        menuticket.add(menucomprador);
 
         jMenuBar1.add(menuticket);
 
@@ -207,7 +207,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        peliculaVista GUI = new peliculaVista(this);
+        PeliculaVista GUI = new PeliculaVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -222,7 +222,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        proyeccionVista GUI = new proyeccionVista(this);
+        ProyeccionVista GUI = new ProyeccionVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -237,7 +237,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        compradorVista GUI = new compradorVista(this);
+        CompradorVista GUI = new CompradorVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -251,7 +251,7 @@ public class SistemaCine extends javax.swing.JFrame {
         escritorio1.removeAll();
         escritorio1.repaint();
 
-        salaVista GUI = new salaVista(this);
+        SalaVista GUI = new SalaVista(this);
         GUI.setVisible(true);
 
         escritorio1.add(GUI);
@@ -279,7 +279,7 @@ public class SistemaCine extends javax.swing.JFrame {
     private void LugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LugarActionPerformed
         escritorio1.removeAll();
         escritorio1.repaint();
-        lugarVista gui = new lugarVista(this);
+        LugarVista gui = new LugarVista(this);
         gui.setVisible(true);
         escritorio1.add(gui);
         escritorio1.moveToFront(gui);
@@ -299,7 +299,7 @@ public class SistemaCine extends javax.swing.JFrame {
     }//GEN-LAST:event_menuonlineActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-        ReporteventasVista gui = new ReporteventasVista();
+        ReporteVentasVista gui = new ReporteVentasVista();
         escritorio1.removeAll();
         escritorio1.add(gui);
         gui.setVisible(true);

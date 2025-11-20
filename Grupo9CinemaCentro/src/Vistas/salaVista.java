@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  *
  * @author Usuario
  */
-public class salaVista extends javax.swing.JInternalFrame {
+public class SalaVista extends javax.swing.JInternalFrame {
 private  SistemaCine sc;
 private Conexion con;
 private SalaData sd;
@@ -23,7 +23,7 @@ private SalaData sd;
     /**
      * Creates new form salaVista
      */
-    public salaVista(SistemaCine sc) {
+    public SalaVista(SistemaCine sc) {
         initComponents();
         
         this.sc=sc;

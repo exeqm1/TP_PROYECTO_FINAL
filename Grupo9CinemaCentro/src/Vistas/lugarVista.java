@@ -8,8 +8,11 @@ package Vistas;
 import Modelo.Comprador;
 import Modelo.Conexion;
 import Modelo.Lugar;
+import Modelo.Pelicula;
 import Modelo.Proyeccion;
+import Modelo.Sala;
 import Persistencia.LugarData;
+import Persistencia.PeliculaData;
 import Persistencia.ProyeccionData;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -24,13 +27,14 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Usuario
  */
-public class lugarVista extends javax.swing.JInternalFrame {
+public class LugarVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
 
     private Conexion conex = sistemaCine.conexionDb();
     private LugarData lugarDAO = new LugarData(conex);
     private ProyeccionData proyeccionDAO = new ProyeccionData(conex);
+    private PeliculaData peliculaDAO = new PeliculaData(conex);
 
     DefaultTableModel modeloTableButacas;
     TableRowSorter<DefaultTableModel> sortModelButacas;
@@ -83,11 +87,33 @@ public class lugarVista extends javax.swing.JInternalFrame {
         }
     }
 
+    public void llenarComboPeliculas() {
+        comboBoxPelicula.removeAllItems();
+        for (Modelo.Pelicula p : new Persistencia.PeliculaData(conex).listarPeliculas()) {
+            comboBoxPelicula.addItem(p);
+        }
 
-    public void llenarComboProyeccion() {
+        comboBoxPelicula.setSelectedIndex(-1);
+    }
+
+    public void llenarComboSalas(Pelicula peli) {
+        comboBoxSala.removeAllItems();
+        if (peli != null) {
+            List<Sala> salas = proyeccionDAO.salasPorPelicula(peli.getIdPelicula());
+            for (Sala s : salas) {
+                comboBoxSala.addItem(s);
+            }
+        }
+        comboBoxSala.setSelectedIndex(-1);
+    }
+
+    public void llenarComboProyeccion(Pelicula peli, Sala sala) {
         comboBoxProyeccion.removeAllItems();
-        for (Proyeccion p : proyeccionDAO.listarProyeccion()) {
-            comboBoxProyeccion.addItem(p);
+        if (peli != null && sala != null) {
+            List<Modelo.Proyeccion> proyecciones = proyeccionDAO.proyeccionesPorPeliculaYSala(peli.getIdPelicula(), sala.getIdSala());
+            for (Modelo.Proyeccion p : proyecciones) {
+                comboBoxProyeccion.addItem(p);
+            }
         }
     }
 
@@ -99,14 +125,41 @@ public class lugarVista extends javax.swing.JInternalFrame {
         comboBoxProyeccion.setSelectedIndex(-1);
     }
 
-    public lugarVista(SistemaCine sc) {
+    public LugarVista(SistemaCine sc) {
 
         initComponents();
         tableButacas.setDefaultEditor(Object.class, null);
-        llenarComboProyeccion();
+        llenarComboPeliculas();
         llenarTableButacas();
         filtrarButacas();
         buttonGuardarCambios.setEnabled(false);
+
+        comboBoxPelicula.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Modelo.Pelicula peliSeleccionada = (Modelo.Pelicula) comboBoxPelicula.getSelectedItem();
+
+                comboBoxSala.removeAllItems();
+                comboBoxProyeccion.removeAllItems();
+
+                if (peliSeleccionada != null) {
+                    llenarComboSalas(peliSeleccionada);
+                }
+            }
+        });
+
+
+        comboBoxSala.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Modelo.Pelicula peliSeleccionada = (Modelo.Pelicula) comboBoxPelicula.getSelectedItem();
+                Modelo.Sala salaSeleccionada = (Modelo.Sala) comboBoxSala.getSelectedItem();
+
+                comboBoxProyeccion.removeAllItems();
+
+                if (peliSeleccionada != null && salaSeleccionada != null) {
+                    llenarComboProyeccion(peliSeleccionada, salaSeleccionada);
+                }
+            }
+        });
 
     }
 
@@ -131,6 +184,10 @@ public class lugarVista extends javax.swing.JInternalFrame {
         txtNumero = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        comboBoxPelicula = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
+        comboBoxSala = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableButacas = new javax.swing.JTable();
         buttonGuardar = new javax.swing.JButton();
@@ -162,6 +219,10 @@ public class lugarVista extends javax.swing.JInternalFrame {
 
         jLabel8.setText("Disponible:");
 
+        jLabel9.setText("Pelicula:");
+
+        jLabel10.setText("Sala:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -169,30 +230,41 @@ public class lugarVista extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(115, 115, 115)
+                        .addComponent(jLabel7))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel3)
                             .addComponent(jLabel8)
-                            .addComponent(jLabel5))
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel10))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtNumero)
-                                .addComponent(comboBoxProyeccion, 0, 126, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtNumero)
+                            .addComponent(comboBoxProyeccion, 0, 126, Short.MAX_VALUE)
                             .addComponent(radioButtonDisponible)
-                            .addComponent(txtFila, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(115, 115, 115)
-                        .addComponent(jLabel7)))
-                .addContainerGap(107, Short.MAX_VALUE))
+                            .addComponent(txtFila, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                            .addComponent(comboBoxPelicula, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comboBoxSala, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel7)
-                .addGap(33, 33, 33)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(comboBoxPelicula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(comboBoxSala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(comboBoxProyeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -208,7 +280,7 @@ public class lugarVista extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(radioButtonDisponible)
                     .addComponent(jLabel8))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addGap(28, 28, 28))
         );
 
         tableButacas.setModel(new javax.swing.table.DefaultTableModel(
@@ -265,42 +337,51 @@ public class lugarVista extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(49, 49, 49)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttonGuardar)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 416, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(buttonEliminar)
-                    .addComponent(buttonGuardarCambios)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(buttonModificar))))
-                .addGap(46, 46, 46))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(buttonEliminar)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel2)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(buttonModificar)))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(buttonGuardar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonGuardarCambios)))
+                        .addGap(46, 46, 46))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 416, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonModificar)))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(txtIDButaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(buttonModificar))
-                    .addComponent(buttonGuardar))
-                .addGap(9, 9, 9)
-                .addComponent(buttonGuardarCambios)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(buttonGuardarCambios))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonGuardar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonEliminar)
                 .addGap(272, 272, 272))
@@ -333,6 +414,8 @@ public class lugarVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Fila y número deben ser valores numéricos");
             return;
         }
+        
+        llenarTableButacas();
     }//GEN-LAST:event_buttonGuardarActionPerformed
 
     private void buttonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonModificarActionPerformed
@@ -340,7 +423,7 @@ public class lugarVista extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(rootPane, "Seleccione una butaca de la lista.");
         }
         tableButacas.setRowSelectionAllowed(true);
-        
+
         selectorLista = (e -> {
             if (!e.getValueIsAdjusting()) {
                 int fila = tableButacas.getSelectedRow();
@@ -368,9 +451,9 @@ public class lugarVista extends javax.swing.JInternalFrame {
                 }
             }
         });
-        
+
         tableButacas.getSelectionModel().addListSelectionListener(selectorLista);
-        
+
         buttonGuardar.setEnabled(false);
         buttonGuardarCambios.setEnabled(true);
     }//GEN-LAST:event_buttonModificarActionPerformed
@@ -403,12 +486,12 @@ public class lugarVista extends javax.swing.JInternalFrame {
             lugarDAO.actualizarButaca(lugar);
             llenarTableButacas();
             limpiarCampos();
-            
+
             if (selectorLista != null) {
                 tableButacas.getSelectionModel().removeListSelectionListener(selectorLista);
-                selectorLista = null; 
+                selectorLista = null;
             }
-            
+
             buttonGuardarCambios.setEnabled(false);
             buttonGuardar.setEnabled(true);
         }
@@ -440,8 +523,11 @@ public class lugarVista extends javax.swing.JInternalFrame {
     private javax.swing.JButton buttonGuardar;
     private javax.swing.JButton buttonGuardarCambios;
     private javax.swing.JButton buttonModificar;
+    private javax.swing.JComboBox<Pelicula> comboBoxPelicula;
     private javax.swing.JComboBox<Proyeccion> comboBoxProyeccion;
+    private javax.swing.JComboBox<Sala> comboBoxSala;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -449,6 +535,7 @@ public class lugarVista extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JCheckBox radioButtonDisponible;

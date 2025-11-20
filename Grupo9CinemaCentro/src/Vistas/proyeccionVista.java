@@ -34,7 +34,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Usuario
  */
-public class proyeccionVista extends javax.swing.JInternalFrame {
+public class ProyeccionVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
 
@@ -97,7 +97,7 @@ public class proyeccionVista extends javax.swing.JInternalFrame {
         }
     }
 
-    public proyeccionVista(SistemaCine sc) {
+    public ProyeccionVista(SistemaCine sc) {
         initComponents();
         tableProyecciones.setDefaultEditor(Object.class, null);
         cargarPelicula();

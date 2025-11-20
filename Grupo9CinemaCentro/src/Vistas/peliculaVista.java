@@ -28,7 +28,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Usuario
  */
-public class peliculaVista extends javax.swing.JInternalFrame {
+public class PeliculaVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
 
@@ -98,7 +98,7 @@ public class peliculaVista extends javax.swing.JInternalFrame {
         radioButtonCartelera.setSelected(false);
     }
 
-    public peliculaVista(SistemaCine sc) {
+    public PeliculaVista(SistemaCine sc) {
         initComponents();
         tablePelis.setDefaultEditor(Object.class, null);
         llenarTablePeliculas();

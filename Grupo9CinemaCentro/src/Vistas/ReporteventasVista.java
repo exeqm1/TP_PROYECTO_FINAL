@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Estudiante
  */
-public class ReporteventasVista extends javax.swing.JInternalFrame {
+public class ReporteVentasVista extends javax.swing.JInternalFrame {
 
     private SistemaCine sistemaCine = new SistemaCine();
     private Conexion con = sistemaCine.conexionDb();
@@ -25,7 +25,7 @@ public class ReporteventasVista extends javax.swing.JInternalFrame {
     private PeliculaData peliculaData;
     private TicketData ticketData;
     
-    public ReporteventasVista() {
+    public ReporteVentasVista() {
         initComponents();
         
         peliculaData = new PeliculaData(con);
@@ -33,7 +33,7 @@ public class ReporteventasVista extends javax.swing.JInternalFrame {
 
         
         modelo = new DefaultTableModel(
-                new Object[]{"ID Proy.", "Inicio", "Fin", "Tipo", "Entradas", "Precio", "Subtotal"}, 
+                new Object[]{"ID", "Inicio", "Fin", "Tipo", "Entradas", "Precio", "Subtotal"}, 
                 0
         ){
             @Override

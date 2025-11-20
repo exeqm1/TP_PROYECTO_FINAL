@@ -23,30 +23,32 @@ public class TicketData {
     private Connection conec = null;
     private CompradorData compradorData;
     private LugarData lugarData;
+    private ProyeccionData proyeccionDAO;
     
 
     public TicketData(Conexion conex) {
         this.conec = conex.conectar();
         this.compradorData = new CompradorData(conex);
         this.lugarData = new LugarData(conex);
+        this.proyeccionDAO = new ProyeccionData(conex);
      
     }
 
     // Metodos CRUD
     public void guardarTicket(Ticket ticket) {
-        String sql = "INSERT INTO ticket (Id_comprador, Id_lugar, fechaCompra, fechaFuncion, monto, activo) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ticket (Id_comprador, Id_lugar, id_proyeccion, fechaCompra, fechaFuncion, monto, activo) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = conec.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, ticket.getComprador().getIdComprador());
             ps.setInt(2, ticket.getAsiento().getIdLugar());
+            ps.setInt(3, ticket.getFuncion().getIdProyeccion());
+            ps.setDate(4, Date.valueOf(ticket.getFechaCompra()));
+            ps.setDate(5, Date.valueOf(ticket.getFechaFuncion()));
+
+            ps.setDouble(6, ticket.getMonto());
+            ps.setBoolean(7, ticket.isActivo());
             
-            ps.setDate(3, Date.valueOf(ticket.getFechaCompra()));
-            ps.setDate(4, Date.valueOf(ticket.getFechaFuncion()));
-
-            ps.setDouble(5, ticket.getMonto());
-            ps.setBoolean(6, ticket.isActivo());
-
             int filasAfectadas = ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -208,7 +210,11 @@ public class TicketData {
                 int Id_lugar = rs.getInt("Id_lugar");
                 Lugar asiento = lugarData.buscarButaca(Id_lugar);
                 ticket.setAsiento(asiento);
-
+                
+   
+                int idProyeccion = rs.getInt("id_proyeccion"); 
+                Proyeccion proyeccion = proyeccionDAO.buscarProyeccion(idProyeccion);
+                ticket.setFuncion(proyeccion);
                 
 
                 lista.add(ticket);
@@ -277,14 +283,14 @@ public class TicketData {
 
     List<Object[]> lista = new ArrayList<>();
 
-    String sql = "SELECT p.id_proyeccion, p.inicio, p.fin, p.tipo, " +
+    String sql = "SELECT p.id_proyeccion, p.horaInicio, p.horaFin, p.tipo, " +
         "       COUNT(t.Id_ticket) AS entradas, " +
         "       p.precio, " +
         "       COUNT(t.Id_ticket) * p.precio AS subtotal " +
         "FROM proyeccion p " +
         "LEFT JOIN ticket t ON p.id_proyeccion = t.id_proyeccion AND t.activo = 1 " +
         "WHERE p.id_pelicula = ? " +
-        "AND p.inicio BETWEEN ? AND ? " +
+        "AND p.horaInicio BETWEEN ? AND ? " +
         "GROUP BY p.id_proyeccion;";
 
     try (PreparedStatement ps = conec.prepareStatement(sql)) {
